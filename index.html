@@ -9,6 +9,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
     <style>
         /* ============================================================
@@ -547,6 +548,15 @@
             text-align: left;
         }
 
+        #selected-list-text {
+            font-family: 'Space Grotesk';
+            text-transform: none;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            color: var(--text-main);
+            letter-spacing: 0;
+        }
+
         body.xray-active .body-label-display {
             border-left-color: var(--xray-blue);
         }
@@ -844,7 +854,7 @@
                     </div>
 
                     <div class="body-selector-wrapper">
-                        <div class="section-title" style="margin-bottom: 25px;">// ADVANCED ANATOMICAL MAPPING V2</div>
+                        <div class="section-title" style="margin-bottom: 25px;">// ADVANCED ANATOMICAL MAPPING V3</div>
                         
                         <div class="xray-control">
                             <button type="button" class="xray-btn active" id="view-std" onclick="setView('std')">STANDARD</button>
@@ -894,12 +904,13 @@
                         </div>
                         <div class="body-label-display">
                             <div id="body-area-label">INITIALIZING_ANATOMY_SCANNER...</div>
+                            <div id="selected-list-text">Ninguna zona seleccionada</div>
                             <div id="pain-meter" style="opacity:0; transition: 0.5s;">
                                 <div class="pain-indicator-container">
                                     <div class="pain-bar-bg">
                                         <div id="pain-bar-fill"></div>
                                     </div>
-                                    <span id="pain-value-text">PAIN: 0/10</span>
+                                    <span id="pain-value-text">MAX_PAIN: 0/10</span>
                                 </div>
                             </div>
                         </div>
@@ -917,7 +928,7 @@
                     </select>
 
                     <div id="time-badge" class="time-calculator-badge">
-                        <span class="calc-label">SESSION ESTIMATE</span>
+                        <span class="calc-label">TOTAL ESTIMATE</span>
                         <span class="calc-value" id="estimated-hours">--:--</span>
                     </div>
 
@@ -962,13 +973,117 @@
     </div>
 
     <script>
-        // Función para cambiar la vista anatómica
+        /**
+         * VIERA STUDIO AUDIO ENGINE
+         */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playModernClick() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playWoosh() {
+            const bufferSize = 2 * audioCtx.sampleRate;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+            const whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(100, audioCtx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 0.3);
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.1);
+            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+            whiteNoise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            whiteNoise.start();
+            whiteNoise.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function playEstimateAppear() {
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1200, now);
+            osc.frequency.exponentialRampToValueAtTime(2400, now + 0.05);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.1, now + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(now + 0.4);
+        }
+
+        function playPop() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
+        }
+
+        function playSuccess() {
+            const now = audioCtx.currentTime;
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            osc1.type = 'square'; 
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(200, now);
+            filter.frequency.exponentialRampToValueAtTime(3000, now + 0.4);
+            osc1.frequency.setValueAtTime(523.25, now); 
+            osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.5);
+            gain1.gain.setValueAtTime(0, now);
+            gain1.gain.linearRampToValueAtTime(0.15, now + 0.1);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(261.63, now); 
+            osc2.frequency.exponentialRampToValueAtTime(523.25, now + 0.5);
+            gain2.gain.setValueAtTime(0, now);
+            gain2.gain.linearRampToValueAtTime(0.1, now + 0.2);
+            gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+            osc1.connect(filter);
+            filter.connect(gain1);
+            osc2.connect(gain2);
+            gain1.connect(audioCtx.destination);
+            gain2.connect(audioCtx.destination);
+            osc1.start(now);
+            osc2.start(now);
+            osc1.stop(now + 0.8);
+            osc2.stop(now + 0.8);
+        }
+
         function setView(type) {
             vibe(15);
+            playModernClick();
             const btnStd = document.getElementById('view-std');
             const btnXray = document.getElementById('view-xray');
             const body = document.body;
-
             if (type === 'xray') {
                 body.classList.add('xray-active');
                 btnXray.classList.add('active');
@@ -981,6 +1096,7 @@
         }
 
         function openVieraAlert(title, message) {
+            playWoosh();
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-msg').innerText = message;
             document.getElementById('viera-alert-popup').classList.add('open');
@@ -988,6 +1104,7 @@
             vibe(30);
         }
         function closeVieraAlert() {
+            playModernClick();
             document.getElementById('viera-alert-popup').classList.remove('open');
             document.body.classList.remove('popup-open');
         }
@@ -1002,6 +1119,7 @@
         function vibe(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
         function openPopup(id) {
+            playWoosh();
             const overlay = document.getElementById('process-overlay'); 
             const data = (id === 'recommendations') ? processData.recommendations : processData[id];
             if(id === 'recommendations') overlay.classList.add('alert-mode');
@@ -1015,12 +1133,16 @@
 
         function closePopup() { 
             const overlay = document.getElementById('process-overlay'); 
-            if(overlay.classList.contains('alert-mode')) showSuccessNotification();
-            overlay.classList.remove('open'); 
-            document.body.classList.remove('popup-open'); 
+            if (overlay.classList.contains('open')) {
+                playModernClick();
+                if(overlay.classList.contains('alert-mode')) showSuccessNotification();
+                overlay.classList.remove('open'); 
+                document.body.classList.remove('popup-open'); 
+            }
         }
 
         function showSuccessNotification() { 
+            playPop();
             const notif = document.getElementById('top-notification'); 
             notif.classList.add('show'); 
             setTimeout(() => { notif.classList.remove('show'); }, 5000); 
@@ -1042,11 +1164,7 @@
         }
 
         function getPainColor(level) {
-            const colors = [
-                "#00ff66", "#44ff44", "#88ff33", 
-                "#ccff22", "#ffff00", "#ffcc00", 
-                "#ff9900", "#ff6600", "#ff3300", "#ff0000" 
-            ];
+            const colors = ["#00ff66", "#44ff44", "#88ff33", "#ccff22", "#ffff00", "#ffcc00", "#ff9900", "#ff6600", "#ff3300", "#ff0000"];
             return colors[level - 1] || "#ffffff";
         }
 
@@ -1057,87 +1175,134 @@
             const bookingForm = document.getElementById('vieraBooking');
             const agendaBar = document.getElementById('agenda-bar');
 
-            // ESC KEY HANDLER
-            document.addEventListener('keydown', (e) => {
-                if (e.key === "Escape") {
-                    if (document.getElementById('process-overlay').classList.contains('open')) closePopup();
-                    if (document.getElementById('viera-alert-popup').classList.contains('open')) closeVieraAlert();
-                }
-            });
-
-            // LOGICA MEJORADA DE SELECCIÓN ANATÓMICA
-            let selectedArea = null;
-            let currentComplexity = 1;
+            /**
+             * SISTEMA DE SELECCIÓN MÚLTIPLE DE ZONAS
+             */
+            let selectedZones = []; 
             const styleSelect = document.getElementById('project-style-select');
             const timeBadge = document.getElementById('time-badge');
             const hoursDisplay = document.getElementById('estimated-hours');
             const areaLabel = document.getElementById('body-area-label');
+            const listText = document.getElementById('selected-list-text');
 
             const calculateTime = () => {
                 const style = styleSelect.value;
-                if (!style || !selectedArea) return;
-
-                let baseHours = style === 'REALISM' ? 6 : 2.5;
-                let total = Math.round(baseHours * currentComplexity);
+                if (!style || selectedZones.length === 0) {
+                    timeBadge.classList.remove('active');
+                    return;
+                }
                 
+                let baseHours = style === 'REALISM' ? 5 : 2.5;
+                let total = selectedZones.reduce((acc, zone) => acc + (baseHours * zone.complexity), 0);
+                total = Math.round(total);
+
                 hoursDisplay.style.opacity = "0";
                 setTimeout(() => {
-                    hoursDisplay.innerText = `SESSION: ${total} - ${total + 2} HOURS`;
+                    hoursDisplay.innerText = `ESTIMATED: ${total} - ${total + 2} HOURS`;
                     hoursDisplay.style.opacity = "1";
-                }, 200);
-                
+                }, 100);
+
+                if (!timeBadge.classList.contains('active')) {
+                    playEstimateAppear();
+                    vibe(20);
+                }
                 timeBadge.classList.add('active');
+            };
+
+            const updateAnatomyUI = () => {
+                if (selectedZones.length === 0) {
+                    areaLabel.innerHTML = "INITIALIZING_ANATOMY_SCANNER...";
+                    listText.innerText = "Ninguna zona seleccionada";
+                    document.getElementById('pain-meter').style.opacity = "0";
+                } else {
+                    areaLabel.innerHTML = `<span style="color:var(--success-green)">[MAPPING ACTIVE]</span> ${selectedZones.length} AREAS`;
+                    listText.innerText = selectedZones.map(z => z.area.replace(/-/g, ' ')).join(', ');
+                    
+                    const maxPain = Math.max(...selectedZones.map(z => z.pain));
+                    const color = getPainColor(maxPain);
+                    const painFill = document.getElementById('pain-bar-fill');
+                    const painValueText = document.getElementById('pain-value-text');
+                    
+                    document.getElementById('pain-meter').style.opacity = "1";
+                    painFill.style.width = (maxPain * 10) + "%";
+                    painFill.style.backgroundColor = color;
+                    painValueText.style.color = color;
+                    painValueText.innerText = `MAX_PAIN: ${maxPain}/10`;
+                }
+                calculateTime();
             };
 
             document.querySelectorAll('.body-part').forEach(part => {
                 part.addEventListener('click', function() {
-                    vibe(20); 
-                    document.querySelectorAll('.body-part').forEach(p => p.classList.remove('selected'));
-                    this.classList.add('selected');
-                    selectedArea = this.getAttribute('data-area');
-                    currentComplexity = parseFloat(this.getAttribute('data-complexity'));
+                    playModernClick();
+                    vibe(15); 
                     
-                    const painLevel = parseInt(this.getAttribute('data-pain') || "5");
-                    const color = getPainColor(painLevel);
-                    const painMeter = document.getElementById('pain-meter');
-                    const painFill = document.getElementById('pain-bar-fill');
-                    const painValueText = document.getElementById('pain-value-text');
+                    const areaId = this.getAttribute('data-area');
+                    const complexity = parseFloat(this.getAttribute('data-complexity'));
+                    const pain = parseInt(this.getAttribute('data-pain'));
 
-                    painMeter.style.opacity = "1";
-                    painFill.style.width = (painLevel * 10) + "%";
-                    painFill.style.backgroundColor = color;
-                    painValueText.style.color = color;
-                    painValueText.innerText = `PAIN_LVL: ${painLevel}/10`;
+                    const index = selectedZones.findIndex(z => z.area === areaId);
 
-                    areaLabel.innerHTML = `<span style="color:var(--success-green)">[SELECTED]</span> ${selectedArea.replace(/-/g, ' ')}`;
-                    calculateTime();
+                    if (index > -1) {
+                        selectedZones.splice(index, 1);
+                        this.classList.remove('selected');
+                    } else {
+                        selectedZones.push({ area: areaId, complexity, pain });
+                        this.classList.add('selected');
+                    }
+                    
+                    updateAnatomyUI();
                 });
             });
 
-            styleSelect.addEventListener('change', () => {
-                vibe(10);
-                calculateTime();
+            styleSelect.addEventListener('change', () => { vibe(10); playModernClick(); calculateTime(); });
+
+            /**
+             * FUNCIONALIDAD DE TECLA ESC
+             */
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    // Cerrar alerta si existe
+                    const alertPopup = document.getElementById('viera-alert-popup');
+                    if (alertPopup.classList.contains('open')) {
+                        closeVieraAlert();
+                    }
+                    // Cerrar popup de proceso si existe
+                    closePopup();
+                    // Colapsar barra de agenda
+                    if (agendaBar.classList.contains('expanded')) {
+                        agendaBar.classList.remove('expanded');
+                        document.getElementById('agenda-main-text').innerText = "CLOSED";
+                    }
+                }
             });
 
             agendaBar.addEventListener('click', function() { 
                 vibe(15); 
+                playWoosh();
                 this.classList.toggle('expanded'); 
                 document.getElementById('agenda-main-text').innerText = this.classList.contains('expanded') ? "INFO" : "CLOSED"; 
             });
 
             bookingForm.addEventListener('submit', function(e) {
                 e.preventDefault(); 
-                if(!selectedArea) {
-                    openVieraAlert("DATA ERROR", "Por favor, selecciona una zona en el mapa anatómico.");
+                if(selectedZones.length === 0) {
+                    openVieraAlert("DATA ERROR", "Por favor, selecciona al menos una zona en el mapa anatómico.");
                     return;
                 }
+                
+                playSuccess(); 
                 openPopup('recommendations'); 
                 this.reset();
-                timeBadge.classList.remove('active');
-                document.getElementById('time-slots-container').style.maxHeight = "0px"; 
+                
+                selectedZones = [];
                 document.querySelectorAll('.body-part').forEach(p => p.classList.remove('selected'));
-                areaLabel.innerText = "INITIALIZING_ANATOMY_SCANNER...";
-                document.getElementById('pain-meter').style.opacity = "0";
+                updateAnatomyUI();
+                
+                document.getElementById('time-slots-container').style.maxHeight = "0px"; 
+                document.querySelectorAll('.fc-daygrid-day').forEach(day => {
+                    day.classList.remove('selected-day', 'selected-day-red', 'selected-day-blue', 'selected-day-green');
+                }); 
             });
 
             document.querySelectorAll('.surface-container').forEach(surface => {
@@ -1154,6 +1319,7 @@
 
             themeBtn.addEventListener('click', () => { 
                 vibe(10); 
+                playPop();
                 const nextTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; 
                 body.setAttribute('data-theme', nextTheme); 
                 themeBtn.innerText = nextTheme.toUpperCase(); 
@@ -1193,15 +1359,12 @@
                     if (led.classList.length > 1) info.el.appendChild(led);
                 },
                 dateClick: function(info) {
+                    playModernClick();
                     vibe(10); 
                     const hasRed = info.dayEl.querySelector('.led-red');
                     const hasBlue = info.dayEl.querySelector('.led-blue');
                     const hasGreen = info.dayEl.querySelector('.led-green');
-
-                    if (hasRed) openVieraAlert("PROYECTO DE AUTOR", "Día exclusivo para diseños originales del artista.");
-                    else if (hasBlue) openVieraAlert("ALTA DEMANDA", "Múltiples solicitudes para esta fecha.");
-                    else if (hasGreen) openVieraAlert("OFFICIAL OPENING", "Inicio oficial de agenda 2026.");
-
+                    
                     const dateInput = document.getElementById('selected-date-input'); 
                     const slots = document.getElementById('time-slots-container');
                     
@@ -1216,7 +1379,6 @@
                         else if(hasBlue) info.dayEl.classList.add('selected-day-blue');
                         else if(hasGreen) info.dayEl.classList.add('selected-day-green');
                         else info.dayEl.classList.add('selected-day'); 
-
                         dateInput.value = `SELECTED: ${info.dateStr}`; slots.style.maxHeight = "200px"; curDate = info.dateStr; 
                     }
                 }
@@ -1226,7 +1388,7 @@
             const periodSelect = document.getElementById('time-period'); 
             const hourSelect = document.getElementById('specific-hour');
             periodSelect.addEventListener('change', function() { 
-                vibe(5); 
+                vibe(5); playModernClick();
                 const hours = this.value === 'MORNING' ? ['10:00', '11:00', '12:00'] : ['16:00', '17:00', '18:00']; 
                 hourSelect.innerHTML = '<option value="" disabled selected>HOUR</option>'; 
                 hours.forEach(h => { let opt = document.createElement('option'); opt.value = h; opt.textContent = h; hourSelect.appendChild(opt); }); 
@@ -1260,17 +1422,15 @@
             const content = element.querySelector('.acc-content'); 
             const isVisible = content.style.maxHeight !== '0px' && content.style.maxHeight !== ''; 
             document.querySelectorAll('.acc-content').forEach(item => item.style.maxHeight = '0px'); 
-            if(!isVisible) content.style.maxHeight = '250px';
+            if(!isVisible) {
+                playWoosh();
+                content.style.maxHeight = '250px';
+            } else {
+                playModernClick();
+            }
         }
     </script>
     
     <div class="spacer-v"></div>
-    <div style="display:none; visibility:hidden; opacity:0; pointer-events:none;">
-        DUAL_ANATOMY_MAPPING_SYSTEM_V6.5
-        X-RAY_MUSCULAR_LAYER_ACTIVE
-        PAIN_SCALE_INTEGRATION_SUCCESSFUL
-        CALCULATOR_ALGORITHM_MODIFIED
-        PRODUCTION_BUILD_STABLE
-    </div>
 </body>
 </html>
