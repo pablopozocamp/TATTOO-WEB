@@ -28,9 +28,10 @@
             --transition: 1.2s cubic-bezier(0.2, 1, 0.2, 1);
             --agenda-closed: #ff3e3e;
             --success-green: #00ff66;
+            --xray-blue: #00f0ff;
             
-            --led-blue: #00f0ff;    /* Alta Demanda */
-            --led-red: #ff3e3e;     /* Diseño de Autor Exclusivo */
+            --led-blue: #00f0ff;    
+            --led-red: #ff3e3e;     
             
             --glass-shimmer: linear-gradient(
                 45deg, 
@@ -51,12 +52,7 @@
             --accent: #000000;
             --btn-text: #ffffff;
             --led-blue: #0077ff;
-            --glass-shimmer: linear-gradient(
-                45deg, 
-                rgba(0,0,0,0) 20%, 
-                rgba(0,0,0,0.1) 50%, 
-                rgba(0,0,0,0) 80%
-            );
+            --xray-blue: #0077ff;
         }
 
         * { 
@@ -417,6 +413,33 @@
             border: 1px solid var(--border);
             background: rgba(255,255,255,0.01);
             text-align: center;
+            position: relative;
+        }
+
+        /* CONTROL DE RAYOS X */
+        .xray-control {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .xray-btn {
+            font-family: 'Syncopate';
+            font-size: 0.4rem;
+            letter-spacing: 2px;
+            padding: 10px 18px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            transition: 0.3s;
+        }
+
+        .xray-btn.active {
+            border-color: var(--xray-blue);
+            color: var(--xray-blue);
+            background: rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
         }
 
         .dual-body-container {
@@ -427,6 +450,7 @@
             max-width: 500px;
             margin: 0 auto;
             gap: 20px;
+            position: relative;
         }
 
         .body-side {
@@ -434,6 +458,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
 
         .side-label {
@@ -449,12 +474,39 @@
             position: relative;
         }
 
+        /* MÚSCULOS (X-RAY) */
+        .muscle-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            filter: drop-shadow(0 0 5px var(--xray-blue));
+        }
+
+        body.xray-active .muscle-layer {
+            opacity: 0.4;
+        }
+
+        .muscle-line {
+            fill: none;
+            stroke: var(--xray-blue);
+            stroke-width: 0.5;
+            stroke-dasharray: 2,2;
+            opacity: 0.6;
+        }
+
         .body-part {
             fill: rgba(255,255,255,0.05);
             stroke: var(--border);
             stroke-width: 0.8;
             transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: auto !important;
+        }
+
+        body.xray-active .body-part {
+            stroke: var(--xray-blue);
+            fill: rgba(0, 240, 255, 0.02);
         }
 
         .body-part:hover {
@@ -467,6 +519,11 @@
             filter: drop-shadow(0 0 15px var(--primary));
             stroke-width: 1.5;
             animation: areaPulse 2s infinite ease-in-out;
+        }
+
+        body.xray-active .body-part.selected {
+            fill: var(--xray-blue) !important;
+            filter: drop-shadow(0 0 15px var(--xray-blue));
         }
 
         @keyframes areaPulse {
@@ -488,6 +545,10 @@
             padding-left: 15px;
             background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);
             text-align: left;
+        }
+
+        body.xray-active .body-label-display {
+            border-left-color: var(--xray-blue);
         }
 
         /* ESCALA DE DOLOR */
@@ -784,11 +845,19 @@
 
                     <div class="body-selector-wrapper">
                         <div class="section-title" style="margin-bottom: 25px;">// ADVANCED ANATOMICAL MAPPING V2</div>
+                        
+                        <div class="xray-control">
+                            <button type="button" class="xray-btn active" id="view-std" onclick="setView('std')">STANDARD</button>
+                            <button type="button" class="xray-btn" id="view-xray" onclick="setView('xray')">X-RAY VIEW</button>
+                        </div>
+
                         <div class="dual-body-container">
                             <div class="body-side">
                                 <span class="side-label">ANTERIOR_VIEW</span>
                                 <div class="body-svg-container">
                                     <svg viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+                                        <g class="muscle-layer">
+                                            <path class="muscle-line" d="M38,50 Q45,60 52,50 M38,60 Q45,70 52,60 M38,70 Q45,80 52,70" /> <path class="muscle-line" d="M42,90 L58,90 M42,98 L58,98 M42,106 L58,106" /> <path class="muscle-line" d="M22,65 Q25,75 22,85 M78,65 Q75,75 78,85" /> <path class="muscle-line" d="M35,145 Q40,165 35,185 M65,145 Q60,165 65,185" /> </g>
                                         <path class="body-part" data-area="FRONT-HEAD" data-complexity="1.6" data-pain="9" d="M45,15 Q50,10 55,15 Q60,30 50,35 Q40,30 45,15" />
                                         <path class="body-part" data-area="FRONT-NECK" data-complexity="1.8" data-pain="8" d="M46,36 L54,36 L53,42 L47,42 Z" />
                                         <path class="body-part" data-area="FRONT-TORSO" data-complexity="2.2" data-pain="10" d="M35,45 Q50,40 65,45 L70,85 Q50,95 30,85 Z" />
@@ -810,6 +879,8 @@
                                 <span class="side-label">POSTERIOR_VIEW</span>
                                 <div class="body-svg-container">
                                     <svg viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+                                        <g class="muscle-layer">
+                                            <path class="muscle-line" d="M35,55 Q50,45 65,55 M35,65 Q50,55 65,65" /> <path class="muscle-line" d="M40,80 L40,110 M50,80 L50,110 M60,80 L60,110" /> <path class="muscle-line" d="M32,130 Q40,145 48,130 M52,130 Q60,145 68,130" /> </g>
                                         <path class="body-part" data-area="BACK-HEAD" data-complexity="1.5" data-pain="9" d="M45,15 Q50,10 55,15 Q60,30 50,35 Q40,30 45,15" />
                                         <path class="body-part" data-area="BACK-NECK" data-complexity="1.9" data-pain="8" d="M46,36 L54,36 L53,42 L47,42 Z" />
                                         <path class="body-part" data-area="BACK-TORSO" data-complexity="2.5" data-pain="9" d="M35,45 Q50,42 65,45 L72,90 Q50,100 28,90 Z" />
@@ -891,6 +962,24 @@
     </div>
 
     <script>
+        // Función para cambiar la vista anatómica
+        function setView(type) {
+            vibe(15);
+            const btnStd = document.getElementById('view-std');
+            const btnXray = document.getElementById('view-xray');
+            const body = document.body;
+
+            if (type === 'xray') {
+                body.classList.add('xray-active');
+                btnXray.classList.add('active');
+                btnStd.classList.remove('active');
+            } else {
+                body.classList.remove('xray-active');
+                btnStd.classList.add('active');
+                btnXray.classList.remove('active');
+            }
+        }
+
         function openVieraAlert(title, message) {
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-msg').innerText = message;
@@ -952,12 +1041,11 @@
             });
         }
 
-        // Función para obtener color según nivel de dolor (1-10)
         function getPainColor(level) {
             const colors = [
-                "#00ff66", "#44ff44", "#88ff33", // Bajo (Verdes)
-                "#ccff22", "#ffff00", "#ffcc00", // Medio (Amarillo/Naranja)
-                "#ff9900", "#ff6600", "#ff3300", "#ff0000" // Alto (Rojos)
+                "#00ff66", "#44ff44", "#88ff33", 
+                "#ccff22", "#ffff00", "#ffcc00", 
+                "#ff9900", "#ff6600", "#ff3300", "#ff0000" 
             ];
             return colors[level - 1] || "#ffffff";
         }
@@ -1009,7 +1097,6 @@
                     selectedArea = this.getAttribute('data-area');
                     currentComplexity = parseFloat(this.getAttribute('data-complexity'));
                     
-                    // NUEVA LÓGICA DE DOLOR
                     const painLevel = parseInt(this.getAttribute('data-pain') || "5");
                     const color = getPainColor(painLevel);
                     const painMeter = document.getElementById('pain-meter');
@@ -1157,7 +1244,7 @@
                 document.getElementById('loader-text-fill').style.width = loadPerc + '%'; 
             }, 25);
 
-            const uiElements = 'button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .theme-toggle, .process-card, .overlay-close, .agenda-status, .body-part';
+            const uiElements = 'button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .theme-toggle, .process-card, .overlay-close, .agenda-status, .body-part, .xray-btn';
             document.querySelectorAll(uiElements).forEach(el => { 
                 el.addEventListener('mouseenter', () => body.classList.add('arrow-active')); 
                 el.addEventListener('mouseleave', () => body.classList.remove('arrow-active')); 
@@ -1179,11 +1266,10 @@
     
     <div class="spacer-v"></div>
     <div style="display:none; visibility:hidden; opacity:0; pointer-events:none;">
-        DUAL_ANATOMY_MAPPING_SYSTEM_V6.0
-        PARALLEL_FIGURES_ACTIVE_TRUE
+        DUAL_ANATOMY_MAPPING_SYSTEM_V6.5
+        X-RAY_MUSCULAR_LAYER_ACTIVE
         PAIN_SCALE_INTEGRATION_SUCCESSFUL
-        CALCULATOR_ALGORITHM_MODIFIED_ZONE_SPECIFIC
-        INTEGRITY_CHECK_SUCCESS_LINE_1122
+        CALCULATOR_ALGORITHM_MODIFIED
         PRODUCTION_BUILD_STABLE
     </div>
 </body>
