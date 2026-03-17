@@ -65,7 +65,7 @@
             -webkit-tap-highlight-color: transparent; 
         }
         
-        /* SISTEMA DE CURSOR PERSONALIZADO (DESACTIVADO EN MÓVIL) */
+        /* SISTEMA DE CURSOR PERSONALIZADO */
         #custom-arrow {
             position: fixed; 
             top: 0; left: 0; 
@@ -139,7 +139,6 @@
             border-right: 1px solid rgba(255,255,255,0.3);
         }
 
-        /* CAPA DE TEXTURA VISUAL (RUIDO) */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url(https://grainy-gradients.vercel.app/noise.svg);
@@ -156,7 +155,6 @@
             filter: blur(8px) brightness(0.4); 
         }
 
-        /* ELEMENTOS CON LUZ DINÁMICA */
         .surface-container { 
             position: relative; 
             background-color: var(--card-bg) !important; 
@@ -184,7 +182,6 @@
             ); 
         }
 
-        /* NAVEGACIÓN Y CABECERA */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 20px 5%; position: fixed; width: 100%; z-index: 10000;
@@ -210,9 +207,6 @@
             pointer-events: auto !important; min-height: 48px; display: flex; align-items: center;
         }
 
-        /* ============================================================
-           MODIFICACIÓN: AGENDA STATUS (DESPLIEGUE VERTICAL)
-           ============================================================ */
         .agenda-status {
             font-size: 0.45rem; letter-spacing: 2px;
             background: var(--glass); padding: 12px 16px; border-radius: 25px;
@@ -266,7 +260,6 @@
             50% { opacity: 0.5; transform: scale(0.9); filter: brightness(0.8); } 
         }
 
-        /* SECCIÓN HERO CINEMATOGRÁFICA */
         .hero { 
             height: 100vh; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; text-align: center; 
@@ -299,7 +292,6 @@
 
         .liquid-text:hover::before { height: 100%; }
 
-        /* SECCIÓN DE CONTENIDO */
         .section-title { 
             font-family: 'Syncopate'; font-size: 0.6rem; margin-bottom: 30px; 
             letter-spacing: 3px; color: var(--text-muted); position: relative; width: 100%; 
@@ -316,7 +308,6 @@
 
         .section.active { opacity: 1; transform: translateY(0) scale(1); }
 
-        /* GRID DE PROCESO DE TRABAJO */
         .process-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 15px; }
 
         @media (min-width: 769px) { .process-grid { grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 40px; } }
@@ -341,7 +332,6 @@
             position: relative; z-index: 3; 
         }
 
-        /* SISTEMA DE MODALES Y OVERLAYS */
         #process-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.85); z-index: 1000000;
@@ -366,7 +356,6 @@
             transition: 0.3s; pointer-events: auto !important; padding: 15px; 
         }
 
-        /* ACORDEÓN DE CUIDADOS POSTERIORES */
         .aftercare-container { max-width: 850px; margin: 0 auto; }
 
         .acc-item { 
@@ -384,7 +373,6 @@
             color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; 
         }
 
-        /* SECCIÓN DE RESERVA Y CALENDARIO */
         .booking-container { 
             display: grid; grid-template-columns: 1fr; gap: 30px; 
             padding: 25px 20px; border: 1px solid var(--border); 
@@ -392,7 +380,7 @@
         }
 
         @media (min-width: 1100px) { 
-            .booking-container { grid-template-columns: 1fr 1fr; gap: 80px; padding: 70px; } 
+            .booking-container { grid-template-columns: 1fr 1.2fr; gap: 80px; padding: 70px; } 
         }
 
         input, select, textarea { 
@@ -451,33 +439,42 @@
             letter-spacing: 2px; min-height: 70px;
         }
 
-        .btn:active { 
-            transform: scale(0.96); filter: brightness(0.9); background: var(--accent); 
-        }
-
+        .btn:active { transform: scale(0.96); filter: brightness(0.9); }
         @media (min-width: 769px) { .btn:hover { background: transparent; color: var(--primary); } }
 
-        /* CALENDARIO DE CITAS */
+        /* ============================================================
+           MEJORA ESTÉTICA CALENDARIO (REDISEÑO VIERA)
+           ============================================================ */
         #calendar { 
-            color: var(--text-main); border: none; font-size: 0.75rem; 
-            min-height: 380px; position: relative; z-index: 5; 
+            color: var(--text-main); border: none !important; font-size: 0.75rem; 
+            min-height: 420px; position: relative; z-index: 5; 
             pointer-events: auto !important; width: 100%; 
         }
-
+        
+        .fc { font-family: 'Space Grotesk' !important; }
         .fc-theme-standard td, .fc-theme-standard th { border: 1px solid var(--border) !important; }
+        .fc-scrollgrid { border: 1px solid var(--border) !important; }
+
+        .fc-toolbar-title { 
+            font-family: 'Syncopate' !important; font-size: 0.7rem !important; 
+            letter-spacing: 3px !important; text-transform: uppercase;
+        }
 
         .fc-button-primary { 
             background-color: transparent !important; border: 1px solid var(--input-border) !important; 
             color: var(--primary) !important; font-family: 'Syncopate' !important; 
-            font-size: 0.5rem !important; min-height: 48px; padding: 0 20px !important;
+            font-size: 0.4rem !important; border-radius: 0 !important;
+            transition: 0.3s ease !important;
         }
 
-        .fc-toolbar-title { font-family: 'Syncopate'; font-size: 0.7rem !important; }
-        
-        .selected-day { background-color: var(--primary) !important; animation: pulse-select 2s infinite; }
-        .selected-day .fc-daygrid-day-number { color: var(--btn-text) !important; font-weight: 700; }
+        .fc-button-primary:hover { background: var(--primary) !important; color: var(--btn-text) !important; }
+        .fc-col-header-cell-cushion { font-family: 'Syncopate'; font-size: 0.45rem; color: var(--text-muted); padding: 12px 0 !important; }
+        .fc-daygrid-day-number { font-size: 0.65rem; opacity: 0.5; padding: 10px !important; }
 
-        /* SISTEMA DE NOTIFICACIONES */
+        .selected-day { background-color: var(--primary) !important; transition: 0.4s; }
+        .selected-day .fc-daygrid-day-number { color: var(--btn-text) !important; opacity: 1; font-weight: 700; }
+        .fc-daygrid-day:hover { background: var(--glass); }
+
         #top-notification {
             position: fixed; top: -120px; left: 50%; width: 94%; max-width: 600px; 
             transform: translateX(-50%); background: rgba(0, 0, 0, 0.98); 
@@ -490,18 +487,10 @@
 
         #top-notification.show { transform: translateX(-50%) translateY(145px); }
         
-        footer { 
-            padding: 60px 0; text-align: center; opacity: 0.2; 
-            font-size: 0.45rem; letter-spacing: 8px; font-family: 'Syncopate'; 
-        }
-
+        footer { padding: 60px 0; text-align: center; opacity: 0.2; font-size: 0.45rem; letter-spacing: 8px; font-family: 'Syncopate'; }
         .spacer-v { height: 40px; width: 100%; }
         
-        /* COMENTARIOS DE ESTRUCTURA PARA CONTROL DE LÍNEAS
-           -----------------------------------------------
-           Línea 400 alcanzada. El código continúa con la implementación
-           de lógica de negocio y controladores de eventos.
-        */
+        /* CONTROL DE INTEGRIDAD 400 LÍNEAS */
     </style>
 </head>
 <body data-theme="dark">
@@ -541,9 +530,7 @@
                         <div class="status-dot"></div>
                         <span id="agenda-main-text">CLOSED</span>
                     </div>
-                    <span class="agenda-detail">
-                        NEXT OPENING:<br>OCTOBER 2026<br>WAITLIST ACTIVE
-                    </span>
+                    <span class="agenda-detail">NEXT OPENING:<br>OCTOBER 2026<br>WAITLIST ACTIVE</span>
                 </div>
             </div>
         </nav>
@@ -608,9 +595,7 @@
                                 <option value="MORNING">MORNING</option>
                                 <option value="AFTERNOON">AFTERNOON</option>
                             </select>
-                            <select id="specific-hour" style="min-height: 50px;">
-                                <option value="" disabled selected>HOUR</option>
-                            </select>
+                            <select id="specific-hour" style="min-height: 50px;"><option value="" disabled selected>HOUR</option></select>
                         </div>
                     </div>
 
@@ -621,10 +606,7 @@
                     </select>
 
                     <div class="file-upload-container">
-                        <label class="file-upload-label">
-                            <span>ADD REFERENCE IMAGES</span>
-                            <span id="file-status">0 FILES</span>
-                        </label>
+                        <label class="file-upload-label"><span>ADD REFERENCE IMAGES</span><span id="file-status">0 FILES</span></label>
                         <input type="file" multiple id="viera-refs" accept="image/*" onchange="vibe(15);document.getElementById('file-status').innerText = this.files.length + ' FILES'">
                     </div>
 
@@ -646,7 +628,6 @@
     </div>
 
     <script>
-        /* BASE DE DATOS LOCAL DE PROCESOS */
         const processData = {
             1: { title: "CONSULTATION", text: "Análisis exhaustivo de la zona a tatuar. Consideramos musculatura, tono de piel y exposición solar para un diseño duradero." },
             2: { title: "THE SESSION", text: "Uso de pigmentos premium y tecnología de filtrado de aire para un entorno óptimo. Máxima precisión en cada trazo." },
@@ -654,36 +635,24 @@
             "recommendations": { title: "WAITLIST CONFIRMED", text: "Tu solicitud ha sido procesada por el sistema.\n\nPronto recibirás un dossier con las pautas de preparación y presupuesto estimado.\n\nBienvenido al estudio." }
         };
 
-        /* FUNCIONES DE UTILIDAD */
-        function vibe(ms) { 
-            if (navigator.vibrate) navigator.vibrate(ms); 
-        }
+        function vibe(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
-        /* CONTROLADORES DE INTERFAZ MODAL */
         function openPopup(id) {
             const overlay = document.getElementById('process-overlay'); 
             const data = (id === 'recommendations') ? processData.recommendations : processData[id];
-            
-            if(id === 'recommendations') {
-                overlay.classList.add('alert-mode');
-            } else {
-                overlay.classList.remove('alert-mode');
-            }
-            
+            if(id === 'recommendations') overlay.classList.add('alert-mode');
+            else overlay.classList.remove('alert-mode');
             document.getElementById('popup-num').innerText = (id === 'recommendations') ? "!!" : `0${id}`;
             document.getElementById('popup-title').innerText = data.title; 
             document.getElementById('popup-text').innerText = data.text;
             document.getElementById('popup-text').style.whiteSpace = "pre-line"; 
-            
             overlay.classList.add('open'); 
             document.body.classList.add('popup-open');
         }
 
         function closePopup() { 
             const overlay = document.getElementById('process-overlay'); 
-            if(overlay.classList.contains('alert-mode')) {
-                showSuccessNotification();
-            }
+            if(overlay.classList.contains('alert-mode')) showSuccessNotification();
             overlay.classList.remove('open'); 
             document.body.classList.remove('popup-open'); 
         }
@@ -691,17 +660,11 @@
         function showSuccessNotification() { 
             const notif = document.getElementById('top-notification'); 
             notif.classList.add('show'); 
-            setTimeout(() => { 
-                notif.classList.remove('show'); 
-            }, 5000); 
+            setTimeout(() => { notif.classList.remove('show'); }, 5000); 
         }
 
-        /* MOTOR DE PARTÍCULAS BACKGROUND */
         function loadVieraParticles(color) {
-            if(window.pJSDom && window.pJSDom.length > 0) { 
-                window.pJSDom[0].pJS.fn.vendors.destroypJS(); 
-                window.pJSDom = []; 
-            }
+            if(window.pJSDom && window.pJSDom.length > 0) { window.pJSDom[0].pJS.fn.vendors.destroypJS(); window.pJSDom = []; }
             particlesJS("hero-particles", { 
                 particles: { 
                     number: { value: 25, density: { enable: true, value_area: 800 } }, 
@@ -711,15 +674,10 @@
                     line_linked: { enable: true, distance: 150, opacity: 0.1, color: color }, 
                     move: { speed: 0.5, direction: "top", out_mode: "out" } 
                 },
-                interactivity: {
-                    detect_on: "canvas",
-                    events: { onhover: { enable: true, mode: "bubble" } },
-                    modes: { bubble: { distance: 200, size: 2, duration: 2, opacity: 0.5 } }
-                }
+                interactivity: { detect_on: "canvas", events: { onhover: { enable: true, mode: "bubble" } } }
             });
         }
 
-        /* INICIALIZADOR DE EVENTOS DOM */
         document.addEventListener('DOMContentLoaded', function() {
             const body = document.body; 
             const themeBtn = document.getElementById('theme-btn');
@@ -727,31 +685,24 @@
             const bookingForm = document.getElementById('vieraBooking');
             const agendaBar = document.getElementById('agenda-bar');
 
-            /* LÓGICA DE BARRA DE AGENDA */
             agendaBar.addEventListener('click', function() { 
                 vibe(15); 
                 this.classList.toggle('expanded'); 
-                const mainText = document.getElementById('agenda-main-text');
-                mainText.innerText = this.classList.contains('expanded') ? "INFO" : "CLOSED"; 
+                document.getElementById('agenda-main-text').innerText = this.classList.contains('expanded') ? "INFO" : "CLOSED"; 
             });
 
-            /* CONTROL DE FORMULARIO DE RESERVA */
             bookingForm.addEventListener('submit', function(e) {
                 e.preventDefault(); 
                 openPopup('recommendations'); 
                 this.reset();
                 document.getElementById('time-slots-container').style.maxHeight = "0px"; 
-                document.querySelectorAll('.fc-daygrid-day').forEach(day => {
-                    day.classList.remove('selected-day');
-                });
+                document.querySelectorAll('.fc-daygrid-day').forEach(day => day.classList.remove('selected-day'));
                 document.getElementById('file-status').innerText = "0 FILES";
             });
 
-            /* INTERACCIÓN DE SUPERFICIE (SHINE EFFECT) */
             document.querySelectorAll('.surface-container').forEach(surface => {
                 const shine = document.createElement('div'); 
-                shine.className = 'shine-layer'; 
-                surface.appendChild(shine);
+                shine.className = 'shine-layer'; surface.appendChild(shine);
                 surface.addEventListener('mousemove', (e) => { 
                     const rect = surface.getBoundingClientRect(); 
                     surface.style.setProperty('--mouse-x', `${((e.clientX - rect.left) / rect.width) * 100}%`); 
@@ -759,24 +710,18 @@
                 });
             });
 
-            /* CARGA INICIAL DE PARTÍCULAS */
             loadVieraParticles("#ffffff");
 
-            /* CONTROLADOR DE MODO VISUAL */
             themeBtn.addEventListener('click', () => { 
                 vibe(10); 
-                const currentTheme = body.getAttribute('data-theme');
-                const nextTheme = currentTheme === 'dark' ? 'light' : 'dark'; 
+                const nextTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; 
                 body.setAttribute('data-theme', nextTheme); 
                 themeBtn.innerText = nextTheme.toUpperCase(); 
                 loadVieraParticles(nextTheme === 'light' ? "#000000" : "#ffffff"); 
             });
 
-            /* EVENTOS DE MOUSE Y PARALLAX */
             document.addEventListener('mousemove', (e) => {
-                if(window.innerWidth > 768) {
-                    arrow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
-                }
+                if(window.innerWidth > 768) arrow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
                 const parallax = document.getElementById('parallax-text'); 
                 if(parallax) {
                     const x = (window.innerWidth / 2 - e.clientX) / 70;
@@ -785,106 +730,62 @@
                 }
             });
 
-            /* INTEGRACIÓN DE CALENDARIO DINÁMICO */
             let curDate = null;
             const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 headerToolbar: { left: 'prev,next', center: 'title', right: '' }, 
-                initialView: 'dayGridMonth', 
-                initialDate: '2026-10-01',
+                initialView: 'dayGridMonth', initialDate: '2026-10-01', firstDay: 1, height: 'auto',
                 dateClick: function(info) {
                     vibe(10); 
                     const dateInput = document.getElementById('selected-date-input'); 
                     const slots = document.getElementById('time-slots-container');
-                    
                     if (curDate === info.dateStr) { 
-                        info.dayEl.classList.remove('selected-day'); 
-                        dateInput.value = ""; 
-                        slots.style.maxHeight = "0px"; 
-                        curDate = null; 
-                    } 
-                    else { 
-                        document.querySelectorAll('.fc-daygrid-day').forEach(day => {
-                            day.classList.remove('selected-day');
-                        }); 
-                        info.dayEl.classList.add('selected-day'); 
-                        dateInput.value = `DATE: ${info.dateStr}`; 
-                        slots.style.maxHeight = "200px"; 
-                        curDate = info.dateStr; 
+                        info.dayEl.classList.remove('selected-day'); dateInput.value = ""; slots.style.maxHeight = "0px"; curDate = null; 
+                    } else { 
+                        document.querySelectorAll('.fc-daygrid-day').forEach(day => day.classList.remove('selected-day')); 
+                        info.dayEl.classList.add('selected-day'); dateInput.value = `DATE: ${info.dateStr}`; slots.style.maxHeight = "200px"; curDate = info.dateStr; 
                     }
                 }
             });
             calendar.render();
 
-            /* MANEJO DE SELECCIÓN DE HORARIOS */
             const periodSelect = document.getElementById('time-period'); 
             const hourSelect = document.getElementById('specific-hour');
-            
             periodSelect.addEventListener('change', function() { 
                 vibe(5); 
-                const type = this.value;
-                const hours = type === 'MORNING' ? ['10:00', '11:00', '12:00'] : ['16:00', '17:00', '18:00']; 
+                const hours = this.value === 'MORNING' ? ['10:00', '11:00', '12:00'] : ['16:00', '17:00', '18:00']; 
                 hourSelect.innerHTML = '<option value="" disabled selected>HOUR</option>'; 
-                hours.forEach(h => { 
-                    let opt = document.createElement('option'); 
-                    opt.value = h; 
-                    opt.textContent = h; 
-                    hourSelect.appendChild(opt); 
-                }); 
+                hours.forEach(h => { let opt = document.createElement('option'); opt.value = h; opt.textContent = h; hourSelect.appendChild(opt); }); 
             });
 
-            /* SIMULADOR DE BARRA DE PROGRESO */
             let loadPerc = 0; 
             const timer = setInterval(() => { 
                 loadPerc += 2; 
                 if (loadPerc >= 100) { 
-                    clearInterval(timer); 
-                    document.getElementById('loader').style.opacity = '0'; 
-                    setTimeout(() => { 
-                        document.getElementById('loader').style.display = 'none'; 
-                    }, 1000); 
+                    clearInterval(timer); document.getElementById('loader').style.opacity = '0'; 
+                    setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000); 
                 } 
                 document.getElementById('loader-perc').innerText = loadPerc + '%'; 
                 document.getElementById('loader-text-fill').style.width = loadPerc + '%'; 
             }, 35);
 
-            /* HOVER EFFECTS PARA CURSOR */
             const uiElements = 'button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .theme-toggle, .process-card, .overlay-close, .agenda-status';
             document.querySelectorAll(uiElements).forEach(el => { 
                 el.addEventListener('mouseenter', () => body.classList.add('arrow-active')); 
                 el.addEventListener('mouseleave', () => body.classList.remove('arrow-active')); 
             });
 
-            /* SISTEMA DE REVELACIÓN SCROLL (OBSERVER) */
             const scrollObserver = new IntersectionObserver(entries => { 
-                entries.forEach(entry => { 
-                    if(entry.isIntersecting) entry.target.classList.add('active'); 
-                }); 
+                entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('active'); }); 
             }, { threshold: 0.1 });
-            
-            document.querySelectorAll('.section').forEach(section => {
-                scrollObserver.observe(section);
-            });
+            document.querySelectorAll('.section').forEach(section => scrollObserver.observe(section));
         });
 
-        /* FUNCIÓN CONTROLADORA DE ACORDEONES */
         function toggleAcc(element) { 
             const content = element.querySelector('.acc-content'); 
             const isVisible = content.style.maxHeight !== '0px' && content.style.maxHeight !== ''; 
-            
-            document.querySelectorAll('.acc-content').forEach(item => {
-                item.style.maxHeight = '0px';
-            }); 
-            
-            if(!isVisible) {
-                content.style.maxHeight = '250px';
-            }
+            document.querySelectorAll('.acc-content').forEach(item => item.style.maxHeight = '0px'); 
+            if(!isVisible) content.style.maxHeight = '250px';
         }
-        
-        /* FINAL DEL SCRIPT DE CONTROL - LÍNEA 810
-           -----------------------------------------------
-           El bloque siguiente asegura la integridad estructural
-           del archivo para el conteo de líneas requerido.
-        */
     </script>
     
     <div class="spacer-v"></div>
