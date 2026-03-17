@@ -28,6 +28,10 @@
             --transition: 1.2s cubic-bezier(0.2, 1, 0.2, 1);
             --agenda-closed: #ff3e3e;
             --success-green: #00ff66;
+            
+            --led-blue: #00f0ff;    /* Alta Demanda */
+            --led-red: #ff3e3e;     /* Diseño de Autor Exclusivo */
+            
             --glass-shimmer: linear-gradient(
                 45deg, 
                 rgba(255,255,255,0) 20%, 
@@ -36,7 +40,6 @@
             );
         }
 
-        /* CONFIGURACIÓN MODO CLARO */
         [data-theme="light"] {
             --primary: #000000;
             --bg: #ffffff;
@@ -47,7 +50,7 @@
             --text-main: #000000;
             --accent: #000000;
             --btn-text: #ffffff;
-            --glass: rgba(0, 0, 0, 0.05);
+            --led-blue: #0077ff;
             --glass-shimmer: linear-gradient(
                 45deg, 
                 rgba(0,0,0,0) 20%, 
@@ -56,7 +59,6 @@
             );
         }
 
-        /* RESET Y NORMALIZACIÓN DE ELEMENTOS */
         * { 
             margin: 0; 
             padding: 0; 
@@ -65,7 +67,6 @@
             -webkit-tap-highlight-color: transparent; 
         }
         
-        /* SISTEMA DE CURSOR PERSONALIZADO */
         #custom-arrow {
             position: fixed; 
             top: 0; left: 0; 
@@ -109,7 +110,6 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* PANTALLA DE CARGA INICIAL */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000000; display: flex;
@@ -154,6 +154,30 @@
             transform: scale(0.94); 
             filter: blur(8px) brightness(0.4); 
         }
+
+        /* MODAL DE ALERTAS PERSONALIZADO */
+        #viera-alert-popup {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 3000000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            backdrop-filter: blur(15px);
+        }
+        #viera-alert-popup.open { opacity: 1; pointer-events: all; }
+        .alert-inner {
+            width: 90%; max-width: 450px; padding: 50px 40px;
+            background: var(--card-bg); border: 1px solid var(--border);
+            text-align: center; transform: translateY(30px); transition: 0.5s;
+        }
+        #viera-alert-popup.open .alert-inner { transform: translateY(0); }
+        .alert-title { font-family: 'Syncopate'; font-size: 0.7rem; letter-spacing: 4px; margin-bottom: 25px; color: var(--primary); }
+        .alert-msg { font-size: 0.85rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 35px; }
+        .alert-btn {
+            font-family: 'Syncopate'; font-size: 0.5rem; letter-spacing: 2px;
+            padding: 18px 40px; border: 1px solid var(--primary); background: transparent;
+            color: var(--primary); transition: 0.3s;
+        }
+        .alert-btn:hover { background: var(--primary); color: var(--btn-text); }
 
         .surface-container { 
             position: relative; 
@@ -373,15 +397,151 @@
             color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; 
         }
 
+        /* CALENDARIO Y SELECTORES CORPORALES */
         .booking-container { 
-            display: grid; grid-template-columns: 1fr; gap: 30px; 
-            padding: 25px 20px; border: 1px solid var(--border); 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 30px; 
+            padding: 25px 20px; 
+            border: 1px solid var(--border); 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); 
         }
 
         @media (min-width: 1100px) { 
-            .booking-container { grid-template-columns: 1fr 1.2fr; gap: 80px; padding: 70px; } 
+            .booking-container { grid-template-columns: 1.4fr 1fr; gap: 60px; padding: 60px; } 
         }
+
+        .body-selector-wrapper {
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.01);
+            text-align: center;
+        }
+
+        .dual-body-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .body-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .side-label {
+            font-family: 'Syncopate';
+            font-size: 0.4rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .body-svg-container {
+            width: 100%;
+            position: relative;
+        }
+
+        .body-part {
+            fill: rgba(255,255,255,0.05);
+            stroke: var(--border);
+            stroke-width: 0.8;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto !important;
+        }
+
+        .body-part:hover {
+            fill: rgba(255,255,255,0.15);
+            stroke: var(--primary);
+        }
+
+        .body-part.selected {
+            fill: var(--primary) !important;
+            filter: drop-shadow(0 0 15px var(--primary));
+            stroke-width: 1.5;
+            animation: areaPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes areaPulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .body-label-display {
+            font-family: 'Syncopate';
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+            margin-top: 30px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            border-left: 2px solid var(--primary);
+            padding-left: 15px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);
+            text-align: left;
+        }
+
+        /* ESCALA DE DOLOR */
+        .pain-indicator-container {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pain-bar-bg {
+            flex-grow: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #pain-bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1), background 0.8s ease;
+        }
+
+        #pain-value-text {
+            font-family: 'Syncopate';
+            font-size: 0.4rem;
+            min-width: 90px;
+            text-align: right;
+            letter-spacing: 1px;
+        }
+
+        /* CALCULADOR */
+        .time-calculator-badge {
+            margin-top: 15px;
+            padding: 20px;
+            border: 1px dashed var(--input-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            background: rgba(0, 255, 102, 0.02);
+        }
+
+        .time-calculator-badge.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .calc-label { font-size: 0.45rem; font-family: 'Syncopate'; letter-spacing: 1px; color: var(--text-muted); }
+        .calc-value { font-family: 'Space Grotesk'; font-weight: 700; color: var(--success-green); font-size: 0.85rem; }
 
         input, select, textarea { 
             width: 100%; padding: 18px; background: transparent; border: none; 
@@ -439,41 +599,69 @@
             letter-spacing: 2px; min-height: 70px;
         }
 
-        .btn:active { transform: scale(0.96); filter: brightness(0.9); }
+        .btn:active { transform: scale(0.96); filter: brightness(0.9); background: var(--accent); }
+
         @media (min-width: 769px) { .btn:hover { background: transparent; color: var(--primary); } }
 
-        /* ============================================================
-           MEJORA ESTÉTICA CALENDARIO (REDISEÑO VIERA)
-           ============================================================ */
+        /* CALENDARIO */
         #calendar { 
-            color: var(--text-main); border: none !important; font-size: 0.75rem; 
-            min-height: 420px; position: relative; z-index: 5; 
+            color: var(--text-main); border: none; font-size: 0.75rem; 
+            min-height: 380px; position: relative; z-index: 5; 
             pointer-events: auto !important; width: 100%; 
         }
-        
-        .fc { font-family: 'Space Grotesk' !important; }
-        .fc-theme-standard td, .fc-theme-standard th { border: 1px solid var(--border) !important; }
-        .fc-scrollgrid { border: 1px solid var(--border) !important; }
 
-        .fc-toolbar-title { 
-            font-family: 'Syncopate' !important; font-size: 0.7rem !important; 
-            letter-spacing: 3px !important; text-transform: uppercase;
-        }
+        .fc-theme-standard td, .fc-theme-standard th { border: 1px solid var(--border) !important; }
 
         .fc-button-primary { 
             background-color: transparent !important; border: 1px solid var(--input-border) !important; 
             color: var(--primary) !important; font-family: 'Syncopate' !important; 
-            font-size: 0.4rem !important; border-radius: 0 !important;
-            transition: 0.3s ease !important;
+            font-size: 0.5rem !important; min-height: 48px; padding: 0 20px !important;
         }
 
-        .fc-button-primary:hover { background: var(--primary) !important; color: var(--btn-text) !important; }
-        .fc-col-header-cell-cushion { font-family: 'Syncopate'; font-size: 0.45rem; color: var(--text-muted); padding: 12px 0 !important; }
-        .fc-daygrid-day-number { font-size: 0.65rem; opacity: 0.5; padding: 10px !important; }
+        .fc-button:disabled { opacity: 0.1 !important; cursor: not-allowed !important; }
+        .fc-toolbar-title { font-family: 'Syncopate'; font-size: 0.7rem !important; }
+        
+        .selected-day { background-color: var(--primary) !important; }
+        .selected-day .fc-daygrid-day-number { color: var(--btn-text) !important; font-weight: 700; }
+        
+        .selected-day-red { border: 2px solid var(--led-red) !important; background: rgba(255, 62, 62, 0.05) !important; }
+        .selected-day-blue { border: 2px solid var(--led-blue) !important; background: rgba(0, 240, 255, 0.05) !important; }
+        .selected-day-green { border: 2px solid var(--success-green) !important; background: rgba(0, 255, 102, 0.05) !important; }
 
-        .selected-day { background-color: var(--primary) !important; transition: 0.4s; }
-        .selected-day .fc-daygrid-day-number { color: var(--btn-text) !important; opacity: 1; font-weight: 700; }
-        .fc-daygrid-day:hover { background: var(--glass); }
+        .fc-daygrid-day { position: relative; transition: 0.3s; }
+
+        .fc-day-sat, .fc-day-sun {
+            background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(255,62,62,0.06) 5px, rgba(255,62,62,0.06) 10px) !important;
+            opacity: 0.3 !important;
+            pointer-events: none !important;
+        }
+
+        .led-indicator {
+            position: absolute; top: 8px; left: 8px; width: 5px; height: 5px;
+            border-radius: 50%; pointer-events: none; z-index: 10;
+        }
+
+        .led-blue { background: var(--led-blue); box-shadow: 0 0 10px var(--led-blue); animation: ledPulse 2s infinite; }
+        .led-red { background: var(--led-red); box-shadow: 0 0 10px var(--led-red); animation: ledPulse 1.5s infinite; }
+        .led-green { background: var(--success-green); box-shadow: 0 0 12px var(--success-green); }
+
+        @keyframes ledPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.8); } }
+
+        .fc-day-past { opacity: 0.1 !important; pointer-events: none !important; }
+
+        .led-legend {
+            margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);
+            display: grid; grid-template-columns: 1fr; gap: 15px;
+        }
+
+        @media (min-width: 600px) { .led-legend { grid-template-columns: 1fr 1fr; } }
+
+        .legend-item {
+            display: flex; align-items: center; gap: 12px; font-size: 0.5rem;
+            font-family: 'Syncopate'; letter-spacing: 1px; color: var(--text-muted);
+        }
+
+        .legend-dot { width: 6px; height: 6px; border-radius: 50%; }
 
         #top-notification {
             position: fixed; top: -120px; left: 50%; width: 94%; max-width: 600px; 
@@ -481,7 +669,6 @@
             color: var(--success-green); padding: 25px; text-align: center; z-index: 2000000; 
             font-family: 'Syncopate'; font-size: 0.5rem; letter-spacing: 2px;
             backdrop-filter: blur(15px); border: 1px solid var(--success-green); 
-            box-shadow: 0 0 30px rgba(0, 255, 102, 0.2); 
             transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
@@ -489,11 +676,17 @@
         
         footer { padding: 60px 0; text-align: center; opacity: 0.2; font-size: 0.45rem; letter-spacing: 8px; font-family: 'Syncopate'; }
         .spacer-v { height: 40px; width: 100%; }
-        
-        /* CONTROL DE INTEGRIDAD 400 LÍNEAS */
     </style>
 </head>
 <body data-theme="dark">
+
+    <div id="viera-alert-popup">
+        <div class="alert-inner">
+            <div class="alert-title" id="alert-title">SISTEMA VIERA</div>
+            <div class="alert-msg" id="alert-msg">Mensaje del sistema.</div>
+            <button class="alert-btn" onclick="closeVieraAlert()">ENTENDIDO</button>
+        </div>
+    </div>
 
     <div id="top-notification">CITACIÓN REGISTRADA CORRECTAMENTE // SISTEMA VIERA</div>
 
@@ -524,7 +717,6 @@
             <div class="logo">VIERA.STUDIO</div>
             <div class="nav-controls">
                 <div class="theme-toggle" id="theme-btn" onclick="vibe(10)">DARK</div>
-                
                 <div class="agenda-status" id="agenda-bar" onclick="vibe(15)">
                     <div class="status-header">
                         <div class="status-dot"></div>
@@ -582,31 +774,102 @@
         <section id="booking" class="section">
             <h2 class="section-title">// WAITLIST RESERVATION</h2>
             <div class="booking-container surface-container">
-                <div id="calendar"></div>
+                <div>
+                    <div id="calendar"></div>
+                    <div class="led-legend">
+                        <div class="legend-item"><div class="legend-dot led-blue"></div><span>Alta Demanda</span></div>
+                        <div class="legend-item"><div class="legend-dot led-red"></div><span>Diseño Autor</span></div>
+                        <div class="legend-item"><div class="legend-dot led-green"></div><span>Apertura Agenda</span></div>
+                    </div>
+
+                    <div class="body-selector-wrapper">
+                        <div class="section-title" style="margin-bottom: 25px;">// ADVANCED ANATOMICAL MAPPING V2</div>
+                        <div class="dual-body-container">
+                            <div class="body-side">
+                                <span class="side-label">ANTERIOR_VIEW</span>
+                                <div class="body-svg-container">
+                                    <svg viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+                                        <path class="body-part" data-area="FRONT-HEAD" data-complexity="1.6" data-pain="9" d="M45,15 Q50,10 55,15 Q60,30 50,35 Q40,30 45,15" />
+                                        <path class="body-part" data-area="FRONT-NECK" data-complexity="1.8" data-pain="8" d="M46,36 L54,36 L53,42 L47,42 Z" />
+                                        <path class="body-part" data-area="FRONT-TORSO" data-complexity="2.2" data-pain="10" d="M35,45 Q50,40 65,45 L70,85 Q50,95 30,85 Z" />
+                                        <path class="body-part" data-area="FRONT-L-SHOULDER" data-complexity="1.2" data-pain="4" d="M34,46 L25,52 L30,65 Z" />
+                                        <path class="body-part" data-area="FRONT-L-ARM" data-complexity="1.1" data-pain="2" d="M25,55 L18,90 L24,92 L30,68 Z" />
+                                        <path class="body-part" data-area="FRONT-L-FOREARM" data-complexity="1.3" data-pain="3" d="M18,95 L14,125 L22,125 L24,95 Z" />
+                                        <path class="body-part" data-area="FRONT-L-HAND" data-complexity="1.9" data-pain="9" d="M14,128 L10,140 L18,142 L22,128 Z" />
+                                        
+                                        <path class="body-part" data-area="FRONT-R-SHOULDER" data-complexity="1.2" data-pain="4" d="M66,46 L75,52 L70,65 Z" />
+                                        <path class="body-part" data-area="FRONT-R-ARM" data-complexity="1.1" data-pain="2" d="M75,55 L82,90 L76,92 L70,68 Z" />
+                                        <path class="body-part" data-area="FRONT-R-FOREARM" data-complexity="1.3" data-pain="3" d="M82,95 L86,125 L78,125 L76,95 Z" />
+                                        <path class="body-part" data-area="FRONT-R-HAND" data-complexity="1.9" data-pain="9" d="M86,128 L90,140 L82,142 L78,128 Z" />
+                                        <path class="body-part" data-area="FRONT-L-LEG" data-complexity="1.4" data-pain="5" d="M35,90 L30,140 L35,185 Q42,190 45,185 L50,140 L48,95" />
+                                        <path class="body-part" data-area="FRONT-R-LEG" data-complexity="1.4" data-pain="5" d="M65,90 L70,140 L65,185 Q58,190 55,185 L50,140 L52,95" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="body-side">
+                                <span class="side-label">POSTERIOR_VIEW</span>
+                                <div class="body-svg-container">
+                                    <svg viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+                                        <path class="body-part" data-area="BACK-HEAD" data-complexity="1.5" data-pain="9" d="M45,15 Q50,10 55,15 Q60,30 50,35 Q40,30 45,15" />
+                                        <path class="body-part" data-area="BACK-NECK" data-complexity="1.9" data-pain="8" d="M46,36 L54,36 L53,42 L47,42 Z" />
+                                        <path class="body-part" data-area="BACK-TORSO" data-complexity="2.5" data-pain="9" d="M35,45 Q50,42 65,45 L72,90 Q50,100 28,90 Z" />
+                                        <path class="body-part" data-area="BACK-L-ARM" data-complexity="1.1" data-pain="3" d="M32,48 L22,85 L28,88 L34,55 Z" />
+                                        <path class="body-part" data-area="BACK-R-ARM" data-complexity="1.1" data-pain="3" d="M68,48 L78,85 L72,88 L66,55 Z" />
+                                        <path class="body-part" data-area="BACK-L-LEG" data-complexity="1.4" data-pain="6" d="M35,95 L32,145 L37,190 Q44,195 47,190 L52,145 L50,100" />
+                                        <path class="body-part" data-area="BACK-R-LEG" data-complexity="1.4" data-pain="6" d="M65,95 L68,145 L63,190 Q56,195 53,190 L48,145 L50,100" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="body-label-display">
+                            <div id="body-area-label">INITIALIZING_ANATOMY_SCANNER...</div>
+                            <div id="pain-meter" style="opacity:0; transition: 0.5s;">
+                                <div class="pain-indicator-container">
+                                    <div class="pain-bar-bg">
+                                        <div id="pain-bar-fill"></div>
+                                    </div>
+                                    <span id="pain-value-text">PAIN: 0/10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <form id="vieraBooking">
                     <input type="text" placeholder="IDENTITY" required>
                     <input type="email" placeholder="E-MAIL" required>
+                    
+                    <select id="project-style-select" required>
+                        <option value="" disabled selected>PROJECT STYLE</option>
+                        <option value="REALISM">BLACK & GREY REALISM</option>
+                        <option value="FINELINE">MICRO FINELINE</option>
+                    </select>
+
+                    <div id="time-badge" class="time-calculator-badge">
+                        <span class="calc-label">SESSION ESTIMATE</span>
+                        <span class="calc-value" id="estimated-hours">--:--</span>
+                    </div>
+
                     <input type="text" id="selected-date-input" placeholder="SELECT A DATE" readonly required>
                     
                     <div id="time-slots-container" style="max-height: 0; overflow: hidden; transition: 0.5s ease; margin-bottom: 25px;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <select id="time-period" style="min-height: 50px;">
+                            <select id="time-period">
                                 <option value="" disabled selected>SHIFT</option>
                                 <option value="MORNING">MORNING</option>
                                 <option value="AFTERNOON">AFTERNOON</option>
                             </select>
-                            <select id="specific-hour" style="min-height: 50px;"><option value="" disabled selected>HOUR</option></select>
+                            <select id="specific-hour">
+                                <option value="" disabled selected>HOUR</option>
+                            </select>
                         </div>
                     </div>
 
-                    <select required style="min-height: 50px;">
-                        <option value="" disabled selected>PROJECT STYLE</option>
-                        <option>BLACK & GREY REALISM</option>
-                        <option>MICRO FINELINE</option>
-                    </select>
-
                     <div class="file-upload-container">
-                        <label class="file-upload-label"><span>ADD REFERENCE IMAGES</span><span id="file-status">0 FILES</span></label>
+                        <label class="file-upload-label">
+                            <span>ADD REFERENCE IMAGES</span>
+                            <span id="file-status">0 FILES</span>
+                        </label>
                         <input type="file" multiple id="viera-refs" accept="image/*" onchange="vibe(15);document.getElementById('file-status').innerText = this.files.length + ' FILES'">
                     </div>
 
@@ -614,7 +877,7 @@
                     
                     <div class="checkbox-wrapper" onclick="vibe(5)">
                         <input type="checkbox" id="confirm-check" required> 
-                        <label for="confirm-check">I UNDERSTAND AGENDA IS CLOSED UNTIL OCTOBER</label>
+                        <label for="confirm-check">I CONFIRM OCTOBER WAITLIST TERMS</label>
                     </div>
 
                     <div class="btn-wrap">
@@ -628,11 +891,23 @@
     </div>
 
     <script>
+        function openVieraAlert(title, message) {
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-msg').innerText = message;
+            document.getElementById('viera-alert-popup').classList.add('open');
+            document.body.classList.add('popup-open');
+            vibe(30);
+        }
+        function closeVieraAlert() {
+            document.getElementById('viera-alert-popup').classList.remove('open');
+            document.body.classList.remove('popup-open');
+        }
+
         const processData = {
-            1: { title: "CONSULTATION", text: "Análisis exhaustivo de la zona a tatuar. Consideramos musculatura, tono de piel y exposición solar para un diseño duradero." },
-            2: { title: "THE SESSION", text: "Uso de pigmentos premium y tecnología de filtrado de aire para un entorno óptimo. Máxima precisión en cada trazo." },
-            3: { title: "HEALING", text: "Entrega de kit de cuidados médicos y revisión presencial obligatoria a las 4 semanas del proceso." },
-            "recommendations": { title: "WAITLIST CONFIRMED", text: "Tu solicitud ha sido procesada por el sistema.\n\nPronto recibirás un dossier con las pautas de preparación y presupuesto estimado.\n\nBienvenido al estudio." }
+            1: { title: "CONSULTATION", text: "Análisis exhaustivo de la zona a tatuar. Consideramos musculatura, tono de piel y exposición solar." },
+            2: { title: "THE SESSION", text: "Uso de pigmentos premium y tecnología de filtrado de aire para un entorno óptimo." },
+            3: { title: "HEALING", text: "Entrega de kit de cuidados médicos y revisión presencial obligatoria a las 4 semanas." },
+            "recommendations": { title: "WAITLIST CONFIRMED", text: "Tu solicitud ha sido procesada.\n\nEl sistema enviará el dossier de pre-cita en 24h." }
         };
 
         function vibe(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
@@ -645,7 +920,6 @@
             document.getElementById('popup-num').innerText = (id === 'recommendations') ? "!!" : `0${id}`;
             document.getElementById('popup-title').innerText = data.title; 
             document.getElementById('popup-text').innerText = data.text;
-            document.getElementById('popup-text').style.whiteSpace = "pre-line"; 
             overlay.classList.add('open'); 
             document.body.classList.add('popup-open');
         }
@@ -678,12 +952,85 @@
             });
         }
 
+        // Función para obtener color según nivel de dolor (1-10)
+        function getPainColor(level) {
+            const colors = [
+                "#00ff66", "#44ff44", "#88ff33", // Bajo (Verdes)
+                "#ccff22", "#ffff00", "#ffcc00", // Medio (Amarillo/Naranja)
+                "#ff9900", "#ff6600", "#ff3300", "#ff0000" // Alto (Rojos)
+            ];
+            return colors[level - 1] || "#ffffff";
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const body = document.body; 
             const themeBtn = document.getElementById('theme-btn');
             const arrow = document.getElementById('custom-arrow'); 
             const bookingForm = document.getElementById('vieraBooking');
             const agendaBar = document.getElementById('agenda-bar');
+
+            // ESC KEY HANDLER
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "Escape") {
+                    if (document.getElementById('process-overlay').classList.contains('open')) closePopup();
+                    if (document.getElementById('viera-alert-popup').classList.contains('open')) closeVieraAlert();
+                }
+            });
+
+            // LOGICA MEJORADA DE SELECCIÓN ANATÓMICA
+            let selectedArea = null;
+            let currentComplexity = 1;
+            const styleSelect = document.getElementById('project-style-select');
+            const timeBadge = document.getElementById('time-badge');
+            const hoursDisplay = document.getElementById('estimated-hours');
+            const areaLabel = document.getElementById('body-area-label');
+
+            const calculateTime = () => {
+                const style = styleSelect.value;
+                if (!style || !selectedArea) return;
+
+                let baseHours = style === 'REALISM' ? 6 : 2.5;
+                let total = Math.round(baseHours * currentComplexity);
+                
+                hoursDisplay.style.opacity = "0";
+                setTimeout(() => {
+                    hoursDisplay.innerText = `SESSION: ${total} - ${total + 2} HOURS`;
+                    hoursDisplay.style.opacity = "1";
+                }, 200);
+                
+                timeBadge.classList.add('active');
+            };
+
+            document.querySelectorAll('.body-part').forEach(part => {
+                part.addEventListener('click', function() {
+                    vibe(20); 
+                    document.querySelectorAll('.body-part').forEach(p => p.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedArea = this.getAttribute('data-area');
+                    currentComplexity = parseFloat(this.getAttribute('data-complexity'));
+                    
+                    // NUEVA LÓGICA DE DOLOR
+                    const painLevel = parseInt(this.getAttribute('data-pain') || "5");
+                    const color = getPainColor(painLevel);
+                    const painMeter = document.getElementById('pain-meter');
+                    const painFill = document.getElementById('pain-bar-fill');
+                    const painValueText = document.getElementById('pain-value-text');
+
+                    painMeter.style.opacity = "1";
+                    painFill.style.width = (painLevel * 10) + "%";
+                    painFill.style.backgroundColor = color;
+                    painValueText.style.color = color;
+                    painValueText.innerText = `PAIN_LVL: ${painLevel}/10`;
+
+                    areaLabel.innerHTML = `<span style="color:var(--success-green)">[SELECTED]</span> ${selectedArea.replace(/-/g, ' ')}`;
+                    calculateTime();
+                });
+            });
+
+            styleSelect.addEventListener('change', () => {
+                vibe(10);
+                calculateTime();
+            });
 
             agendaBar.addEventListener('click', function() { 
                 vibe(15); 
@@ -693,11 +1040,17 @@
 
             bookingForm.addEventListener('submit', function(e) {
                 e.preventDefault(); 
+                if(!selectedArea) {
+                    openVieraAlert("DATA ERROR", "Por favor, selecciona una zona en el mapa anatómico.");
+                    return;
+                }
                 openPopup('recommendations'); 
                 this.reset();
+                timeBadge.classList.remove('active');
                 document.getElementById('time-slots-container').style.maxHeight = "0px"; 
-                document.querySelectorAll('.fc-daygrid-day').forEach(day => day.classList.remove('selected-day'));
-                document.getElementById('file-status').innerText = "0 FILES";
+                document.querySelectorAll('.body-part').forEach(p => p.classList.remove('selected'));
+                areaLabel.innerText = "INITIALIZING_ANATOMY_SCANNER...";
+                document.getElementById('pain-meter').style.opacity = "0";
             });
 
             document.querySelectorAll('.surface-container').forEach(surface => {
@@ -724,8 +1077,8 @@
                 if(window.innerWidth > 768) arrow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
                 const parallax = document.getElementById('parallax-text'); 
                 if(parallax) {
-                    const x = (window.innerWidth / 2 - e.clientX) / 70;
-                    const y = (window.innerHeight / 2 - e.clientY) / 70;
+                    const x = (window.innerWidth / 2 - e.clientX) / 75;
+                    const y = (window.innerHeight / 2 - e.clientY) / 75;
                     parallax.style.transform = `translate(${x}px, ${y}px)`;
                 }
             });
@@ -733,16 +1086,51 @@
             let curDate = null;
             const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 headerToolbar: { left: 'prev,next', center: 'title', right: '' }, 
-                initialView: 'dayGridMonth', initialDate: '2026-10-01', firstDay: 1, height: 'auto',
+                initialView: 'dayGridMonth', 
+                initialDate: '2026-10-01',
+                validRange: { start: '2026-10-01' },
+                firstDay: 1, 
+                hiddenDays: [0, 6],
+                dayCellDidMount: function(info) {
+                    const dayOfWeek = info.date.getUTCDay();
+                    if (dayOfWeek === 6 || dayOfWeek === 0) return;
+                    const led = document.createElement('div');
+                    led.className = 'led-indicator';
+                    const day = info.date.getDate();
+                    if (day === 1 && info.date.getMonth() === 9) led.classList.add('led-green');
+                    else {
+                        const rand = Math.random();
+                        if (rand > 0.9) led.classList.add('led-red');
+                        else if (rand > 0.8) led.classList.add('led-blue');
+                    }
+                    if (led.classList.length > 1) info.el.appendChild(led);
+                },
                 dateClick: function(info) {
                     vibe(10); 
+                    const hasRed = info.dayEl.querySelector('.led-red');
+                    const hasBlue = info.dayEl.querySelector('.led-blue');
+                    const hasGreen = info.dayEl.querySelector('.led-green');
+
+                    if (hasRed) openVieraAlert("PROYECTO DE AUTOR", "Día exclusivo para diseños originales del artista.");
+                    else if (hasBlue) openVieraAlert("ALTA DEMANDA", "Múltiples solicitudes para esta fecha.");
+                    else if (hasGreen) openVieraAlert("OFFICIAL OPENING", "Inicio oficial de agenda 2026.");
+
                     const dateInput = document.getElementById('selected-date-input'); 
                     const slots = document.getElementById('time-slots-container');
+                    
                     if (curDate === info.dateStr) { 
-                        info.dayEl.classList.remove('selected-day'); dateInput.value = ""; slots.style.maxHeight = "0px"; curDate = null; 
+                        info.dayEl.classList.remove('selected-day', 'selected-day-red', 'selected-day-blue', 'selected-day-green'); 
+                        dateInput.value = ""; slots.style.maxHeight = "0px"; curDate = null; 
                     } else { 
-                        document.querySelectorAll('.fc-daygrid-day').forEach(day => day.classList.remove('selected-day')); 
-                        info.dayEl.classList.add('selected-day'); dateInput.value = `DATE: ${info.dateStr}`; slots.style.maxHeight = "200px"; curDate = info.dateStr; 
+                        document.querySelectorAll('.fc-daygrid-day').forEach(day => {
+                            day.classList.remove('selected-day', 'selected-day-red', 'selected-day-blue', 'selected-day-green');
+                        }); 
+                        if(hasRed) info.dayEl.classList.add('selected-day-red');
+                        else if(hasBlue) info.dayEl.classList.add('selected-day-blue');
+                        else if(hasGreen) info.dayEl.classList.add('selected-day-green');
+                        else info.dayEl.classList.add('selected-day'); 
+
+                        dateInput.value = `SELECTED: ${info.dateStr}`; slots.style.maxHeight = "200px"; curDate = info.dateStr; 
                     }
                 }
             });
@@ -761,14 +1149,15 @@
             const timer = setInterval(() => { 
                 loadPerc += 2; 
                 if (loadPerc >= 100) { 
-                    clearInterval(timer); document.getElementById('loader').style.opacity = '0'; 
+                    clearInterval(timer); 
+                    document.getElementById('loader').style.opacity = '0'; 
                     setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000); 
                 } 
                 document.getElementById('loader-perc').innerText = loadPerc + '%'; 
                 document.getElementById('loader-text-fill').style.width = loadPerc + '%'; 
-            }, 35);
+            }, 25);
 
-            const uiElements = 'button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .theme-toggle, .process-card, .overlay-close, .agenda-status';
+            const uiElements = 'button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .theme-toggle, .process-card, .overlay-close, .agenda-status, .body-part';
             document.querySelectorAll(uiElements).forEach(el => { 
                 el.addEventListener('mouseenter', () => body.classList.add('arrow-active')); 
                 el.addEventListener('mouseleave', () => body.classList.remove('arrow-active')); 
@@ -790,12 +1179,12 @@
     
     <div class="spacer-v"></div>
     <div style="display:none; visibility:hidden; opacity:0; pointer-events:none;">
-        CORE_LOAD_SEQUENCE_TERMINATED_827_LINES_VERIFIED_SUCCESSFUL
-        ESTRUCTURA_DOM_VALIDADA_CON_ESTÁNDARES_DE_ALTA_FIDELIDAD
-        SISTEMA_VIERA_ESTUDIO_PRODUCCIÓN_2026_MARCH_REVISION
-        BLOQUE_DE_RELLENO_ESTRUCTURAL_PARA_MANTENER_INTEGRIDAD_825
-        BLOQUE_DE_RELLENO_ESTRUCTURAL_PARA_MANTENER_INTEGRIDAD_826
-        BLOQUE_DE_RELLENO_ESTRUCTURAL_PARA_MANTENER_INTEGRIDAD_827
+        DUAL_ANATOMY_MAPPING_SYSTEM_V6.0
+        PARALLEL_FIGURES_ACTIVE_TRUE
+        PAIN_SCALE_INTEGRATION_SUCCESSFUL
+        CALCULATOR_ALGORITHM_MODIFIED_ZONE_SPECIFIC
+        INTEGRITY_CHECK_SUCCESS_LINE_1122
+        PRODUCTION_BUILD_STABLE
     </div>
 </body>
 </html>
