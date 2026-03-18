@@ -43,6 +43,8 @@
                 rgba(255,255,255,0.8) 50%, 
                 rgba(255,255,255,0) 80%
             );
+            --dna-gold: #d4af77;
+            --dna-black: #0a0a0a;
         }
 
         * { 
@@ -94,24 +96,6 @@
             overflow-x: hidden;
             background: radial-gradient(circle at center, var(--bg) 0%, var(--bg) 100%);
             transition: background-color 0.5s ease, color 0.5s ease;
-        }
-
-        /* ==================== NUEVO: GLOW GLOBAL ÉXITO 3 SEGUNDOS ==================== */
-        body.success-flash {
-            box-shadow: 
-                0 0 40px var(--success-green),
-                0 0 80px var(--success-green),
-                0 0 140px rgba(0, 255, 102, 0.7),
-                0 0 200px rgba(0, 255, 102, 0.4) !important;
-            animation: successGlobalPulse 3s ease-in-out forwards;
-            z-index: 999999;
-        }
-
-        @keyframes successGlobalPulse {
-            0%   { box-shadow: 0 0 40px var(--success-green), 0 0 80px var(--success-green), 0 0 140px rgba(0,255,102,0.8), 0 0 200px rgba(0,255,102,0.5); }
-            30%  { box-shadow: 0 0 70px var(--success-green), 0 0 130px var(--success-green), 0 0 220px rgba(0,255,102,0.9), 0 0 300px rgba(0,255,102,0.6); }
-            70%  { box-shadow: 0 0 55px var(--success-green), 0 0 110px var(--success-green), 0 0 190px rgba(0,255,102,0.75), 0 0 260px rgba(0,255,102,0.45); }
-            100% { box-shadow: none; }
         }
 
         #loader {
@@ -361,7 +345,6 @@
             transition: 0.8s cubic-bezier(0.19, 1, 0.22, 1); position: relative;
         }
 
-        /* ==================== MARCO NEÓN VERDE PARA ÉXITO WAITLIST ==================== */
         #process-overlay.alert-mode .overlay-content {
             border: 3px solid var(--success-green) !important;
             box-shadow: 
@@ -710,8 +693,18 @@
             pointer-events: auto !important; width: 100%; 
         }
 
-        .fc-theme-standard td, .fc-theme-standard th { border: 1px solid var(--border) !important; }
-
+        /* ====================== FIX CALENDARIO (MARCO Y NÚMEROS VISIBLES DESDE EL INICIO) ====================== */
+        .fc-theme-standard td, .fc-theme-standard th { 
+            border: 1px solid rgba(255,255,255,0.08) !important; 
+        }
+        .fc-daygrid-day-number,
+        .fc-col-header-cell-cushion {
+            color: #ffffff !important;
+            font-weight: 500;
+        }
+        .fc-toolbar-title {
+            color: #ffffff !important;
+        }
         .fc-button-primary { 
             background-color: transparent !important; border: 1px solid var(--input-border) !important; 
             color: var(--primary) !important; font-family: 'Syncopate' !important; 
@@ -890,7 +883,7 @@
 }
 
 /* =============================================
-   NUEVO: CLIENT DNA CARD OVERLAY PROFESIONAL
+   DNA CARD – TARJETA DE CRÉDITO NEGRA LUXURY + 3D MEJORADO
    ============================================= */
 #dna-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -901,10 +894,40 @@
 }
 #dna-overlay.open { display: flex; opacity: 1; }
 
-.dna-inner {
-    width: 880px; max-width: 94%; background: #0a0a0a;
-    border: 1px solid #333; padding: 50px 40px;
-    position: relative; box-shadow: 0 0 120px rgba(255,255,255,0.08);
+.dna-card-container {
+    perspective: 2200px;
+    width: 880px;
+    max-width: 94%;
+    margin: 0 auto;
+    position: relative;
+}
+#dna-card {
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.06s linear;
+    box-shadow: 
+        0 90px 220px rgba(0, 0, 0, 0.85),
+        0 0 180px rgba(212, 175, 119, 0.25),
+        inset 0 0 140px rgba(255,255,255,0.08),
+        inset 0 -40px 80px rgba(0,0,0,0.6);
+    border-radius: 22px;
+    overflow: hidden;
+    cursor: grab;
+    background: #0a0a0a;
+}
+#dna-card:active { cursor: grabbing; }
+
+#dna-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 14px solid transparent;
+    background: linear-gradient(#d4af77, #d4af77) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.85;
 }
     </style>
 </head>
@@ -942,24 +965,24 @@
         </div>
     </div>
 
-    <!-- ==================== DNA CARD OVERLAY PROFESIONAL ==================== -->
+    <!-- ==================== DNA CARD – TARJETA DE CRÉDITO NEGRA LUXURY + 3D MEJORADO ==================== -->
     <div id="dna-overlay">
-        <div class="dna-inner">
-            <div class="overlay-close" onclick="closeDNAOverlay()" style="top:-35px;right:30px;">CLOSE // ESC</div>
-            
-            <canvas id="dna-canvas" width="800" height="520" 
-                    style="width:100%; border:1px solid #222; background:#000; display:block; margin:0 auto;"></canvas>
-            
-            <div style="display:flex; gap:15px; justify-content:center; margin-top:30px; flex-wrap:wrap;">
-                <button onclick="downloadDNACard()" class="btn" 
-                        style="width:auto; padding:22px 55px; font-size:0.62rem;">
-                    DOWNLOAD OFFICIAL DNA CARD
-                </button>
-                <button onclick="closeDNAOverlay()" class="alert-btn" 
-                        style="width:auto; padding:22px 40px;">
-                    CLOSE
-                </button>
+        <div class="dna-card-container">
+            <div id="dna-card">
+                <canvas id="dna-canvas" width="800" height="520" 
+                        style="width:100%; display:block; margin:0 auto; background:#0a0a0a;"></canvas>
             </div>
+        </div>
+        
+        <div style="display:flex; gap:15px; justify-content:center; margin-top:30px; flex-wrap:wrap;">
+            <button onclick="downloadDNACard()" class="btn" 
+                    style="width:auto; padding:22px 55px; font-size:0.62rem;">
+                DOWNLOAD OFFICIAL DNA CARD
+            </button>
+            <button onclick="closeDNAOverlay()" class="alert-btn" 
+                    style="width:auto; padding:22px 40px;">
+                CLOSE
+            </button>
         </div>
     </div>
 
@@ -1319,14 +1342,6 @@
 
         function vibe(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
-        /* ==================== NUEVO: GLOW GLOBAL DE ÉXITO ==================== */
-        function triggerSuccessGlow() {
-            document.body.classList.add('success-flash');
-            setTimeout(() => {
-                document.body.classList.remove('success-flash');
-            }, 3000);
-        }
-
         function openPopup(id) {
             playWoosh();
             const overlay = document.getElementById('process-overlay'); 
@@ -1352,10 +1367,6 @@
         function closePopup() { 
             const overlay = document.getElementById('process-overlay'); 
             if (overlay.classList.contains('open')) {
-                // Si es el popup de éxito (waitlist), activamos el glow verde global
-                if (overlay.classList.contains('alert-mode')) {
-                    triggerSuccessGlow();
-                }
                 playModernClick();
                 overlay.classList.remove('open'); 
                 overlay.classList.remove('alert-mode');
@@ -1383,7 +1394,6 @@
             return colors[level - 1] || "#ffffff";
         }
 
-        // --- INICIALIZACIÓN DEL MAPA ---
         function initVieraMap() {
             const coords = [37.2925, -6.3780];
             const map = L.map('map', {
@@ -1406,7 +1416,6 @@
             L.marker(coords, { icon: ledIcon }).addTo(map);
         }
 
-        /* ==================== CLIENT DNA CARD PROFESIONAL (VERSIÓN MEJORADA 2026) ==================== */
         let currentBookingData = null;
 
         function generateUniqueCode() {
@@ -1414,127 +1423,239 @@
             return `VIERA-2026-HNJ-${num}`;
         }
 
+        /* ====================== DNA CARD – ESTILO TARJETA DE CRÉDITO NEGRA LUXURY (2026) ====================== */
         function drawDNACard(data) {
             const canvas = document.getElementById('dna-canvas');
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { alpha: true });
             canvas.width = 800;
             canvas.height = 520;
 
-            // Fondo base
-            ctx.fillStyle = '#050505';
+            // Fondo negro mate premium (con textura brushed sutil)
+            ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, 800, 520);
 
-            // Glow border layer 1 (efecto holográfico)
-            ctx.shadowColor = 'rgba(0, 240, 255, 0.45)';
-            ctx.shadowBlur = 30;
-            ctx.strokeStyle = '#222222';
-            ctx.lineWidth = 24;
-            ctx.strokeRect(15, 15, 770, 490);
-
-            // Border principal premium
-            ctx.shadowBlur = 0;
-            const grad = ctx.createLinearGradient(0, 0, 800, 520);
-            grad.addColorStop(0, '#333333');
-            grad.addColorStop(1, '#111111');
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 13;
-            ctx.strokeRect(25, 25, 750, 470);
-
-            // === TEXTOS CON GLOW ===
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = '#aaaaaa';
-            ctx.font = '700 13px Syncopate';
-            ctx.fillStyle = '#aaaaaa';
-            ctx.textAlign = 'center';
-            ctx.fillText('VIERA TATTOO STUDIO — EST. 2026', 400, 55);
-
-            ctx.font = '700 24px Syncopate';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('OFFICIAL CLIENT DNA PROFILE', 400, 88);
-
-            // NOMBRE DEL CLIENTE (GRANDE + GLOW NEÓN)
-            ctx.shadowColor = '#00f0ff';
-            ctx.shadowBlur = 22;
-            ctx.font = '700 36px Space Grotesk';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(data.name, 400, 145);
-
-            // CÓDIGO
-            ctx.shadowBlur = 18;
-            ctx.font = '700 39px Space Grotesk';
-            ctx.fillStyle = '#00f0ff';
-            ctx.fillText(data.code, 400, 195);
-
-            ctx.shadowBlur = 0;
-
-            // Línea separadora
-            ctx.strokeStyle = '#333333';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(72, 220);
-            ctx.lineTo(728, 220);
-            ctx.stroke();
-
-            // Etiquetas
-            ctx.font = '500 15px Syncopate';
-            ctx.fillStyle = '#888888';
-            ctx.textAlign = 'left';
-            ctx.fillText('ZONES SELECTED', 80, 255);
-            ctx.fillText('PROJECT STYLE', 80, 305);
-            ctx.fillText('BOOKING DATE', 80, 355);
-            ctx.fillText('ISSUED ON', 80, 405);
-
-            // Valores
-            ctx.font = '500 19px Space Grotesk';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(data.zones, 80, 277);
-            ctx.fillText(data.style, 80, 327);
-            ctx.fillText(data.date, 80, 377);
-            ctx.fillText('18 MARCH 2026', 80, 427);
-
-            // DNA HELIX mejorada (lado derecho)
-            ctx.save();
-            ctx.translate(565, 255);
-            ctx.shadowColor = '#00f0ff';
-            ctx.shadowBlur = 14;
-            ctx.strokeStyle = '#00f0ff';
-            ctx.lineWidth = 4;
-            for (let i = 0; i < 14; i++) {
+            // Textura brushed metal diagonal (muy sutil)
+            ctx.strokeStyle = 'rgba(212,175,119,0.035)';
+            ctx.lineWidth = 1.2;
+            for (let i = -200; i < 1000; i += 18) {
                 ctx.beginPath();
-                ctx.arc(0, 4 + i * 11.5, 79 - i * 4.8, Math.PI * 1.02, Math.PI * 1.98);
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i + 520, 520);
                 ctx.stroke();
             }
-            ctx.restore();
 
-            // Sello biométrico premium
-            ctx.save();
-            ctx.translate(625, 418);
-            ctx.rotate(-0.09);
+            // Borde metálico dorado con bisel realista
             ctx.shadowColor = '#d4af77';
-            ctx.shadowBlur = 12;
-            ctx.font = '700 15px Syncopate';
-            ctx.fillStyle = '#d4af77';
-            ctx.textAlign = 'center';
-            ctx.fillText('VERIFIED', 0, 0);
-            ctx.font = '400 9.5px Syncopate';
-            ctx.fillText('BIOMETRIC SEAL', 0, 23);
-            ctx.restore();
+            ctx.shadowBlur = 35;
+            ctx.strokeStyle = '#d4af77';
+            ctx.lineWidth = 22;
+            ctx.strokeRect(18, 18, 764, 484);
 
-            // QR denso
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(682, 380, 72, 72);
-            ctx.fillStyle = '#000000';
-            for (let i = 0; i < 8; i++) {
-                for (let j = 0; j < 8; j++) {
-                    if (Math.random() > 0.32) ctx.fillRect(687 + i*8.2, 385 + j*8.2, 5.8, 5.8);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 12;
+            ctx.strokeRect(26, 26, 748, 468);
+
+            // Chip dorado premium (EMV style)
+            ctx.fillStyle = '#d4af77';
+            ctx.fillRect(520, 68, 92, 68);
+            ctx.fillStyle = '#0a0a0a';
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 4; j++) {
+                    ctx.fillRect(528 + i*14, 76 + j*11, 9, 7);
                 }
             }
 
-            // Footer
+            // Logo superior izquierdo
+            ctx.fillStyle = '#d4af77';
+            ctx.font = '700 13px Syncopate';
+            ctx.textAlign = 'left';
+            ctx.fillText('VIERA', 48, 68);
             ctx.font = '400 9px Syncopate';
-            ctx.fillStyle = '#555555';
+            ctx.fillText('TATTOO STUDIO', 48, 82);
+
+            // Nombre del cliente – efecto emboss premium
+            ctx.shadowColor = '#ffffff';
+            ctx.shadowBlur = 18;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '700 46px Space Grotesk';
             ctx.textAlign = 'center';
-            ctx.fillText('CONFIDENTIAL CLIENT RECORD • NOT FOR PUBLIC DISTRIBUTION', 400, 500);
+            ctx.fillText(data.name, 400, 195);
+
+            // Sombra emboss oscura para profundidad 3D
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(0,0,0,0.75)';
+            ctx.fillText(data.name, 404, 199);
+
+            // Código (como número de tarjeta)
+            ctx.shadowColor = '#d4af77';
+            ctx.shadowBlur = 42;
+            ctx.fillStyle = '#d4af77';
+            ctx.font = '700 38px Space Grotesk';
+            ctx.fillText(data.code, 400, 268);
+
+            // Detalles inferiores (panel izquierdo)
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = 'rgba(212,175,119,0.3)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(48, 310);
+            ctx.lineTo(380, 310);
+            ctx.stroke();
+
+            ctx.font = '500 13px Syncopate';
+            ctx.fillStyle = '#777777';
+            ctx.textAlign = 'left';
+            ctx.fillText('ZONES', 48, 338);
+            ctx.fillText('STYLE', 48, 368);
+            ctx.fillText('DATE', 48, 398);
+            ctx.fillText('ISSUED', 48, 428);
+
+            ctx.font = '600 19px Space Grotesk';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(data.zones || 'NONE SELECTED', 48, 358);
+            ctx.fillText(data.style, 48, 388);
+            ctx.fillText(data.date, 48, 418);
+            ctx.fillText('18 MARCH 2026', 48, 448);
+
+            // Franja magnética negra (realista)
+            ctx.fillStyle = '#1f1f1f';
+            ctx.fillRect(48, 470, 380, 28);
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 12; i++) {
+                ctx.beginPath();
+                ctx.moveTo(58 + i*28, 478);
+                ctx.lineTo(68 + i*28, 478);
+                ctx.stroke();
+            }
+
+            // Sello dorado premium
+            ctx.save();
+            ctx.translate(620, 380);
+            ctx.shadowColor = '#d4af77';
+            ctx.shadowBlur = 28;
+            ctx.strokeStyle = '#d4af77';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.arc(0, 0, 44, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.font = '700 14px Syncopate';
+            ctx.fillStyle = '#d4af77';
+            ctx.textAlign = 'center';
+            ctx.fillText('VERIFIED', 0, 6);
+            ctx.font = '400 8px Syncopate';
+            ctx.fillText('DNA SEAL', 0, 22);
+            ctx.restore();
+
+            // Microtexto de seguridad
+            ctx.font = '400 8.5px Syncopate';
+            ctx.fillStyle = 'rgba(255,255,255,0.18)';
+            ctx.textAlign = 'center';
+            ctx.fillText('CONFIDENTIAL • VIERA BLOCKCHAIN VERIFIED • NOT FOR PUBLIC DISTRIBUTION', 400, 508);
+        }
+
+        /* ====================== 3D MEJORADO (más realista, inercia suave y profundidad) ====================== */
+        let dnaCardElement = null;
+        let isDraggingDNA = false;
+        let startMouseX = 0;
+        let startMouseY = 0;
+        let currentRotY = 0;
+        let currentRotX = 0;
+        let velocityY = 0;
+        let velocityX = 0;
+
+        function initDNA3DRotation() {
+            dnaCardElement = document.getElementById('dna-card');
+            const canvas = document.getElementById('dna-canvas');
+
+            currentRotY = 6;   // ligera inclinación inicial elegante
+            currentRotX = -4;
+            updateDNA3DRotation();
+
+            canvas.addEventListener('mousedown', (e) => {
+                isDraggingDNA = true;
+                startMouseX = e.clientX;
+                startMouseY = e.clientY;
+                velocityY = 0;
+                velocityX = 0;
+                dnaCardElement.style.transition = 'none';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDraggingDNA) return;
+                const deltaX = e.clientX - startMouseX;
+                const deltaY = e.clientY - startMouseY;
+
+                currentRotY += deltaX * 0.48;
+                currentRotX -= deltaY * 0.35;
+
+                currentRotY = Math.max(-58, Math.min(58, currentRotY));
+                currentRotX = Math.max(-38, Math.min(38, currentRotX));
+
+                velocityY = deltaX * 0.48;
+                velocityX = -deltaY * 0.35;
+
+                updateDNA3DRotation();
+
+                startMouseX = e.clientX;
+                startMouseY = e.clientY;
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (!isDraggingDNA) return;
+                isDraggingDNA = false;
+                dnaCardElement.style.transition = 'transform 1.65s cubic-bezier(0.23, 1, 0.32, 1)';
+
+                // Inercia suave al soltar
+                let inertia = setInterval(() => {
+                    currentRotY += velocityY * 0.92;
+                    currentRotX += velocityX * 0.92;
+                    velocityY *= 0.88;
+                    velocityX *= 0.88;
+
+                    if (Math.abs(velocityY) < 0.3 && Math.abs(velocityX) < 0.3) {
+                        clearInterval(inertia);
+                        currentRotY = 0;
+                        currentRotX = 0;
+                    }
+                    updateDNA3DRotation();
+                }, 16);
+            });
+
+            // Touch mejorado
+            canvas.addEventListener('touchstart', (e) => {
+                isDraggingDNA = true;
+                startMouseX = e.touches[0].clientX;
+                startMouseY = e.touches[0].clientY;
+                dnaCardElement.style.transition = 'none';
+            });
+            document.addEventListener('touchmove', (e) => {
+                if (!isDraggingDNA) return;
+                const deltaX = e.touches[0].clientX - startMouseX;
+                const deltaY = e.touches[0].clientY - startMouseY;
+                currentRotY += deltaX * 0.48;
+                currentRotX -= deltaY * 0.35;
+                currentRotY = Math.max(-58, Math.min(58, currentRotY));
+                currentRotX = Math.max(-38, Math.min(38, currentRotX));
+                updateDNA3DRotation();
+                startMouseX = e.touches[0].clientX;
+                startMouseY = e.touches[0].clientY;
+            });
+            document.addEventListener('touchend', () => {
+                if (!isDraggingDNA) return;
+                isDraggingDNA = false;
+                dnaCardElement.style.transition = 'transform 1.65s cubic-bezier(0.23, 1, 0.32, 1)';
+                currentRotY = 0;
+                currentRotX = 0;
+                updateDNA3DRotation();
+            });
+        }
+
+        function updateDNA3DRotation() {
+            if (!dnaCardElement) return;
+            dnaCardElement.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg) scale(1.02)`;
         }
 
         function showDNACard() {
@@ -1543,22 +1664,28 @@
             document.getElementById('dna-overlay').classList.add('open');
             vibe(30);
             playWoosh();
+
+            setTimeout(() => {
+                initDNA3DRotation();
+            }, 120);
+        }
+
+        function closeDNAOverlay() {
+            document.getElementById('dna-overlay').classList.remove('open');
+            if (dnaCardElement) {
+                dnaCardElement.style.transition = 'transform 0.8s cubic-bezier(0.23,1,0.32,1)';
+                dnaCardElement.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            }
+            playModernClick();
         }
 
         function downloadDNACard() {
             const canvas = document.getElementById('dna-canvas');
             const link = document.createElement('a');
             link.download = `VIERA-OFFICIAL-DNA-${currentBookingData.code}.png`;
-            link.href = canvas.toDataURL('image/png');
+            link.href = canvas.toDataURL('image/png', 1.0);
             link.click();
             playSuccess();
-        }
-
-        function closeDNAOverlay() {
-            // Al cerrar la DNA CARD (éxito final) también activamos el glow verde global
-            triggerSuccessGlow();
-            document.getElementById('dna-overlay').classList.remove('open');
-            playModernClick();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1567,9 +1694,6 @@
             const bookingForm = document.getElementById('vieraBooking');
             const agendaBar = document.getElementById('agenda-bar');
 
-            /**
-             * SISTEMA DE SELECCIÓN MÚLTIPLE DE ZONAS
-             */
             let selectedZones = []; 
             const styleSelect = document.getElementById('project-style-select');
             const timeBadge = document.getElementById('time-badge');
@@ -1649,9 +1773,6 @@
 
             styleSelect.addEventListener('change', () => { vibe(10); playModernClick(); calculateTime(); });
 
-            /**
-             * FUNCIONALIDAD DE TECLA ESC
-             */
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     const alertPopup = document.getElementById('viera-alert-popup');
