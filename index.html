@@ -127,7 +127,7 @@
 
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: ur[](https://grainy-gradients.vercel.app/noise.svg);
+            background: url(https://grainy-gradients.vercel.app/noise.svg);
             opacity: 0.05; pointer-events: none; z-index: 10;
         }
 
@@ -341,6 +341,43 @@
             border: 1px solid var(--border); backdrop-filter: blur(15px);
             box-shadow: 0 50px 100px rgba(0,0,0,0.5); transform: translateY(30px); 
             transition: 0.8s cubic-bezier(0.19, 1, 0.22, 1); position: relative;
+        }
+
+        /* ==================== NUEVO: MARCO NEÓN VERDE PARA ÉXITO WAITLIST ==================== */
+        #process-overlay.alert-mode .overlay-content {
+            border: 3px solid var(--success-green) !important;
+            box-shadow: 
+                0 0 25px var(--success-green),
+                0 0 50px var(--success-green),
+                0 0 90px rgba(0, 255, 102, 0.6),
+                0 0 140px rgba(0, 255, 102, 0.3) !important;
+            animation: neonPulse 2s infinite alternate ease-in-out;
+        }
+
+        @keyframes neonPulse {
+            from { box-shadow: 
+                0 0 25px var(--success-green),
+                0 0 50px var(--success-green),
+                0 0 90px rgba(0, 255, 102, 0.6); }
+            to { box-shadow: 
+                0 0 35px var(--success-green),
+                0 0 70px var(--success-green),
+                0 0 120px rgba(0, 255, 102, 0.8),
+                0 0 180px rgba(0, 255, 102, 0.4); }
+        }
+
+        #process-overlay.alert-mode #popup-num {
+            color: var(--success-green) !important;
+            text-shadow: 0 0 20px var(--success-green);
+        }
+
+        #process-overlay.alert-mode #popup-title {
+            color: var(--success-green) !important;
+            text-shadow: 0 0 15px var(--success-green);
+        }
+
+        #process-overlay.alert-mode .overlay-close {
+            color: var(--success-green) !important;
         }
 
         #process-overlay.open .overlay-content { transform: translateY(0) rotateX(0deg); }
@@ -1291,6 +1328,7 @@
             if (overlay.classList.contains('open')) {
                 playModernClick();
                 overlay.classList.remove('open'); 
+                overlay.classList.remove('alert-mode');
                 document.body.classList.remove('popup-open'); 
             }
         }
