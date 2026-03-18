@@ -7,6 +7,9 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
@@ -40,20 +43,6 @@
                 rgba(255,255,255,0.8) 50%, 
                 rgba(255,255,255,0) 80%
             );
-        }
-
-        [data-theme="light"] {
-            --primary: #000000;
-            --bg: #ffffff;
-            --card-bg: rgba(255, 255, 255, 0.98);
-            --border: #eeeeee;
-            --input-border: #dddddd;
-            --text-muted: #888888;
-            --text-main: #000000;
-            --accent: #000000;
-            --btn-text: #ffffff;
-            --led-blue: #0077ff;
-            --xray-blue: #0077ff;
         }
 
         * { 
@@ -138,7 +127,7 @@
 
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url(https://grainy-gradients.vercel.app/noise.svg);
+            background: ur[](https://grainy-gradients.vercel.app/noise.svg);
             opacity: 0.05; pointer-events: none; z-index: 10;
         }
 
@@ -195,14 +184,6 @@
             z-index: 2;
         }
 
-        [data-theme="light"] .shine-layer { 
-            background: radial-gradient(
-                circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                rgba(0,0,0,0.04) 0%, 
-                transparent 60%
-            ); 
-        }
-
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 20px 5%; position: fixed; width: 100%; z-index: 10000;
@@ -220,13 +201,6 @@
         }
 
         .nav-controls { display: flex; align-items: center; gap: 10px; }
-
-        .theme-toggle {
-            font-family: 'Syncopate'; font-size: 0.4rem; letter-spacing: 1px;
-            padding: 10px 15px; border: 1px solid var(--border); border-radius: 20px;
-            transition: 0.3s; background: transparent; color: var(--primary);
-            pointer-events: auto !important; min-height: 48px; display: flex; align-items: center;
-        }
 
         .agenda-status {
             font-size: 0.45rem; letter-spacing: 2px;
@@ -747,9 +721,139 @@
         
         footer { padding: 60px 0; text-align: center; opacity: 0.2; font-size: 0.45rem; letter-spacing: 8px; font-family: 'Syncopate'; }
         .spacer-v { height: 40px; width: 100%; }
+
+        /* --- ESTILOS DEL MAPA (NUEVO) --- */
+        .map-section { padding: 80px 5%; }
+        @media (min-width: 769px) { .map-section { padding: 120px 10%; } }
+
+        .map-wrapper {
+            width: 100%; height: 450px; border: 1px solid var(--border);
+            position: relative; overflow: hidden; background: #000;
+        }
+
+        #map { 
+            width: 100%; height: 100%; 
+            filter: grayscale(1) invert(1) contrast(1.2) brightness(0.7); 
+        }
+
+        .leaflet-control-attribution, .leaflet-control-zoom { display: none !important; }
+
+        .location-info { margin-top: 30px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 769px) { .location-info { grid-template-columns: 1fr 1fr; gap: 40px; } }
+
+        .info-box {
+            padding: 30px; border: 1px solid var(--border); background: var(--glass);
+            transition: 0.5s var(--transition);
+        }
+
+        .info-box:hover { border-color: var(--led-blue); box-shadow: 0 0 20px rgba(0, 240, 255, 0.1); }
+        .info-label { font-family: 'Syncopate'; font-size: 0.5rem; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 15px; display: block; }
+        .info-value { font-family: 'Space Grotesk'; font-size: 1rem; color: var(--text-main); line-height: 1.6; }
+
+        .custom-marker {
+            width: 12px; height: 12px; background: var(--led-blue); border-radius: 50%;
+            box-shadow: 0 0 15px var(--led-blue), 0 0 30px var(--led-blue);
+            animation: markerPulse 2s infinite;
+        }
+        @keyframes markerPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- BIOMETRIC SCANNER STYLE --- */
+#biometric-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-family: 'Syncopate', sans-serif;
+    overflow: hidden;
+}
+
+.scanner-box {
+    position: relative;
+    width: 280px;
+    height: 380px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.scanner-laser {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: #00f2ff;
+    box-shadow: 0 0 15px #00f2ff, 0 0 30px #00f2ff;
+    top: 0;
+    z-index: 2;
+    animation: scanning 2.5s ease-in-out infinite;
+}
+
+@keyframes scanning {
+    0% { top: 0%; }
+    50% { top: 100%; }
+    100% { top: 0%; }
+}
+
+.fingerprint-svg {
+    width: 150px;
+    opacity: 0.5;
+    fill: var(--primary);
+}
+
+.scan-text {
+    margin-top: 30px;
+    letter-spacing: 5px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    animation: pulseText 1.5s infinite;
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.scan-status {
+    margin-top: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #00f2ff;
+    font-size: 0.9rem;
+}
+
+/* =============================================
+   NUEVO: CLIENT DNA CARD OVERLAY PROFESIONAL
+   ============================================= */
+#dna-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.97); z-index: 3200000;
+    display: none; align-items: center; justify-content: center;
+    transition: opacity 0.8s cubic-bezier(0.19,1,0.22,1);
+    backdrop-filter: blur(20px);
+}
+#dna-overlay.open { display: flex; opacity: 1; }
+
+.dna-inner {
+    width: 880px; max-width: 94%; background: #0a0a0a;
+    border: 1px solid #333; padding: 50px 40px;
+    position: relative; box-shadow: 0 0 120px rgba(255,255,255,0.08);
+}
     </style>
 </head>
-<body data-theme="dark">
+<body>
 
     <div id="viera-alert-popup">
         <div class="alert-inner">
@@ -783,11 +887,31 @@
         </div>
     </div>
 
+    <!-- ==================== DNA CARD OVERLAY PROFESIONAL ==================== -->
+    <div id="dna-overlay">
+        <div class="dna-inner">
+            <div class="overlay-close" onclick="closeDNAOverlay()" style="top:-35px;right:30px;">CLOSE // ESC</div>
+            
+            <canvas id="dna-canvas" width="800" height="520" 
+                    style="width:100%; border:1px solid #222; background:#000; display:block; margin:0 auto;"></canvas>
+            
+            <div style="display:flex; gap:15px; justify-content:center; margin-top:30px; flex-wrap:wrap;">
+                <button onclick="downloadDNACard()" class="btn" 
+                        style="width:auto; padding:22px 55px; font-size:0.62rem;">
+                    DOWNLOAD OFFICIAL DNA CARD
+                </button>
+                <button onclick="closeDNAOverlay()" class="alert-btn" 
+                        style="width:auto; padding:22px 40px;">
+                    CLOSE
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="content-wrapper">
         <nav class="navbar">
             <div class="logo">VIERA.STUDIO</div>
             <div class="nav-controls">
-                <div class="theme-toggle" id="theme-btn" onclick="vibe(10)">DARK</div>
                 <div class="agenda-status" id="agenda-bar" onclick="vibe(15)">
                     <div class="status-header">
                         <div class="status-dot"></div>
@@ -838,6 +962,25 @@
                 <div class="acc-item" onclick="vibe(5);toggleAcc(this)">
                     <div class="acc-header">03. ART PROTECTION <span>+</span></div>
                     <div class="acc-content"><p style="padding: 20px 0;">Evita sol directo, piscinas, gimnasio y saunas por 15 días. No rasques ni arranques las pequeñas costras naturales.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section map-section">
+            <h2 class="section-title">// STUDIO LOCATION</h2>
+            <div class="map-wrapper surface-container">
+                <div id="map"></div>
+                <div class="shine-layer"></div>
+            </div>
+            
+            <div class="location-info">
+                <div class="info-box">
+                    <span class="info-label">COORDINATES</span>
+                    <div class="info-value">C/ FRANCISCO SANTISO, 41,<br>21740 HINOJOS, HUELVA</div>
+                </div>
+                <div class="info-box">
+                    <span class="info-label">ACCESS PROTOCOL</span>
+                    <div class="info-value">ESTUDIO PRIVADO // SOLO CITA PREVIA<br>CONTACTO: @uvetattooer</div>
                 </div>
             </div>
         </section>
@@ -1113,7 +1256,10 @@
             1: { title: "CONSULTATION", text: "Análisis exhaustivo de la zona a tatuar. Consideramos musculatura, tono de piel y exposición solar." },
             2: { title: "THE SESSION", text: "Uso de pigmentos premium y tecnología de filtrado de aire para un entorno óptimo." },
             3: { title: "HEALING", text: "Entrega de kit de cuidados médicos y revisión presencial obligatoria a las 4 semanas." },
-            "recommendations": { title: "WAITLIST CONFIRMED", text: "Tu solicitud ha sido procesada.\n\nEl sistema enviará el dossier de pre-cita en 24h." }
+            "recommendations": { 
+                title: "WAITLIST CONFIRMED", 
+                text: "Tu solicitud ha sido procesada.\n\nEl sistema enviará el dossier de pre-cita en 24h.\n\nTu CLIENT DNA CARD ya está generada y lista para descargar." 
+            }
         };
 
         function vibe(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
@@ -1126,7 +1272,16 @@
             else overlay.classList.remove('alert-mode');
             document.getElementById('popup-num').innerText = (id === 'recommendations') ? "!!" : `0${id}`;
             document.getElementById('popup-title').innerText = data.title; 
-            document.getElementById('popup-text').innerText = data.text;
+            
+            const popupTextEl = document.getElementById('popup-text');
+            
+            if (id === 'recommendations') {
+                popupTextEl.innerHTML = data.text.replace(/\n/g, '<br>') + 
+                    `<br><br><button onclick="showDNACard()" class="btn" style="margin-top:15px;width:100%;font-size:0.65rem;letter-spacing:2px;">GENERATE MY DNA CARD →</button>`;
+            } else {
+                popupTextEl.innerText = data.text;
+            }
+            
             overlay.classList.add('open'); 
             document.body.classList.add('popup-open');
         }
@@ -1135,17 +1290,9 @@
             const overlay = document.getElementById('process-overlay'); 
             if (overlay.classList.contains('open')) {
                 playModernClick();
-                if(overlay.classList.contains('alert-mode')) showSuccessNotification();
                 overlay.classList.remove('open'); 
                 document.body.classList.remove('popup-open'); 
             }
-        }
-
-        function showSuccessNotification() { 
-            playPop();
-            const notif = document.getElementById('top-notification'); 
-            notif.classList.add('show'); 
-            setTimeout(() => { notif.classList.remove('show'); }, 5000); 
         }
 
         function loadVieraParticles(color) {
@@ -1168,9 +1315,149 @@
             return colors[level - 1] || "#ffffff";
         }
 
+        // --- INICIALIZACIÓN DEL MAPA ---
+        function initVieraMap() {
+            const coords = [37.2925, -6.3780];
+            const map = L.map('map', {
+                center: coords,
+                zoom: 16,
+                zoomControl: false,
+                dragging: !L.Browser.mobile,
+                scrollWheelZoom: false
+            });
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+            const ledIcon = L.divIcon({
+                className: 'custom-marker-container',
+                html: '<div class="custom-marker"></div>',
+                iconSize: [12, 12],
+                iconAnchor: [6, 6]
+            });
+
+            L.marker(coords, { icon: ledIcon }).addTo(map);
+        }
+
+        /* ==================== CLIENT DNA CARD PROFESIONAL ==================== */
+        let currentBookingData = null;
+
+        function generateUniqueCode() {
+            const num = String(Math.floor(1000 + Math.random() * 9000));
+            return `VIERA-2026-HNJ-${num}`;
+        }
+
+        function drawDNACard(data) {
+            const canvas = document.getElementById('dna-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 520;
+
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, 800, 520);
+
+            const grad = ctx.createLinearGradient(0, 0, 800, 520);
+            grad.addColorStop(0, '#222222');
+            grad.addColorStop(1, '#111111');
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 18;
+            ctx.strokeRect(25, 25, 750, 470);
+
+            ctx.font = '700 13px Syncopate';
+            ctx.fillStyle = '#aaaaaa';
+            ctx.textAlign = 'center';
+            ctx.fillText('VIERA TATTOO STUDIO — EST. 2026', 400, 58);
+
+            ctx.font = '700 28px Syncopate';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('OFFICIAL CLIENT DNA PROFILE', 400, 95);
+
+            ctx.font = '700 42px Space Grotesk';
+            ctx.fillStyle = '#00f0ff';
+            ctx.fillText(data.code, 400, 155);
+
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(80, 175);
+            ctx.lineTo(720, 175);
+            ctx.stroke();
+
+            ctx.font = '500 16px Syncopate';
+            ctx.fillStyle = '#888888';
+            ctx.textAlign = 'left';
+            ctx.fillText('ZONES SELECTED', 80, 225);
+            ctx.fillText('PROJECT STYLE', 80, 280);
+            ctx.fillText('BOOKING DATE', 80, 335);
+            ctx.fillText('ISSUED ON', 80, 390);
+
+            ctx.font = '500 19px Space Grotesk';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(data.zones, 80, 248);
+            ctx.fillText(data.style, 80, 303);
+            ctx.fillText(data.date, 80, 358);
+            ctx.fillText('18 MARCH 2026', 80, 413);
+
+            ctx.save();
+            ctx.translate(560, 240);
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3.5;
+            for (let i = 0; i < 11; i++) {
+                ctx.beginPath();
+                ctx.arc(0, 8 + i * 11, 72 - i * 4.5, Math.PI * 1.05, Math.PI * 1.95);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(620, 410);
+            ctx.rotate(-0.12);
+            ctx.font = '700 13px Syncopate';
+            ctx.fillStyle = '#d4af77';
+            ctx.textAlign = 'center';
+            ctx.fillText('VERIFIED', 0, 0);
+            ctx.font = '400 9px Syncopate';
+            ctx.fillText('BIOMETRIC SEAL', 0, 18);
+            ctx.restore();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(680, 380, 68, 68);
+            ctx.fillStyle = '#000';
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 6; j++) {
+                    if (Math.random() > 0.4) ctx.fillRect(685 + i*10, 385 + j*10, 6, 6);
+                }
+            }
+
+            ctx.font = '400 10px Syncopate';
+            ctx.fillStyle = '#555555';
+            ctx.textAlign = 'center';
+            ctx.fillText('CONFIDENTIAL CLIENT RECORD • NOT FOR PUBLIC DISTRIBUTION', 400, 500);
+        }
+
+        function showDNACard() {
+            if (!currentBookingData) return;
+            drawDNACard(currentBookingData);
+            document.getElementById('dna-overlay').classList.add('open');
+            vibe(30);
+            playWoosh();
+        }
+
+        function downloadDNACard() {
+            const canvas = document.getElementById('dna-canvas');
+            const link = document.createElement('a');
+            link.download = `VIERA-OFFICIAL-DNA-${currentBookingData.code}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            playSuccess();
+        }
+
+        function closeDNAOverlay() {
+            document.getElementById('dna-overlay').classList.remove('open');
+            playModernClick();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const body = document.body; 
-            const themeBtn = document.getElementById('theme-btn');
             const arrow = document.getElementById('custom-arrow'); 
             const bookingForm = document.getElementById('vieraBooking');
             const agendaBar = document.getElementById('agenda-bar');
@@ -1262,14 +1549,15 @@
              */
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    // Cerrar alerta si existe
                     const alertPopup = document.getElementById('viera-alert-popup');
                     if (alertPopup.classList.contains('open')) {
                         closeVieraAlert();
                     }
-                    // Cerrar popup de proceso si existe
                     closePopup();
-                    // Colapsar barra de agenda
+                    const dnaOverlay = document.getElementById('dna-overlay');
+                    if (dnaOverlay.classList.contains('open')) {
+                        closeDNAOverlay();
+                    }
                     if (agendaBar.classList.contains('expanded')) {
                         agendaBar.classList.remove('expanded');
                         document.getElementById('agenda-main-text').innerText = "CLOSED";
@@ -1291,6 +1579,13 @@
                     return;
                 }
                 
+                currentBookingData = {
+                    code: generateUniqueCode(),
+                    style: styleSelect.value || 'BLACK & GREY REALISM',
+                    date: document.getElementById('selected-date-input').value.replace('SELECTED: ', '') || 'OCTOBER 2026',
+                    zones: selectedZones.map(z => z.area.replace(/-/g, ' ')).join(' • ') || 'NONE SELECTED'
+                };
+
                 playSuccess(); 
                 openPopup('recommendations'); 
                 this.reset();
@@ -1316,15 +1611,6 @@
             });
 
             loadVieraParticles("#ffffff");
-
-            themeBtn.addEventListener('click', () => { 
-                vibe(10); 
-                playPop();
-                const nextTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; 
-                body.setAttribute('data-theme', nextTheme); 
-                themeBtn.innerText = nextTheme.toUpperCase(); 
-                loadVieraParticles(nextTheme === 'light' ? "#000000" : "#ffffff"); 
-            });
 
             document.addEventListener('mousemove', (e) => {
                 if(window.innerWidth > 768) arrow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
@@ -1400,13 +1686,16 @@
                 if (loadPerc >= 100) { 
                     clearInterval(timer); 
                     document.getElementById('loader').style.opacity = '0'; 
-                    setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000); 
+                    setTimeout(() => { 
+                        document.getElementById('loader').style.display = 'none'; 
+                        initVieraMap();
+                    }, 1000); 
                 } 
                 document.getElementById('loader-perc').innerText = loadPerc + '%'; 
                 document.getElementById('loader-text-fill').style.width = loadPerc + '%'; 
             }, 25);
 
-            const uiElements = 'button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .theme-toggle, .process-card, .overlay-close, .agenda-status, .body-part, .xray-btn';
+            const uiElements = 'button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .process-card, .overlay-close, .agenda-status, .body-part, .xray-btn, .info-box';
             document.querySelectorAll(uiElements).forEach(el => { 
                 el.addEventListener('mouseenter', () => body.classList.add('arrow-active')); 
                 el.addEventListener('mouseleave', () => body.classList.remove('arrow-active')); 
@@ -1432,5 +1721,18 @@
     </script>
     
     <div class="spacer-v"></div>
+    <div id="biometric-overlay">
+    <div class="scanner-box">
+        <div class="scanner-laser"></div>
+        <svg class="fingerprint-svg" viewBox="0 0 512 512">
+            <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm0 472c-119.3 0-216-96.7-216-216S136.7 40 256 40s216 96.7 216 216-96.7 216-216 216z"/>
+            <path d="M344 160c-11-20.5-30.2-36.1-53-41.9-5.7-1.4-11.5 2.1-13 7.8s2.1 11.5 7.8 13c16.3 4.1 30.1 15.3 38 30 2.8 5.2 9.3 7.2 14.5 4.4 5.2-2.8 7.2-9.3 4.4-14.5z"/>
+            <path d="M256 160c-53 0-96 43-96 96 0 5.5 4.5 10 10 10s10-4.5 10-10c0-41.9 34.1-76 76-76s76 34.1 76 76c0 5.5 4.5 10 10 10s10-4.5 10-10c0-53-43-96-96-96z"/>
+            <path d="M256 224c-17.7 0-32 14.3-32 32 0 5.5 4.5 10 10 10s10-4.5 10-10c0-6.6 5.4-12 12-12s12 5.4 12 12c0 35.3-28.7 64-64 64s-64-28.7-64-64c0-5.5-4.5-10-10-10s-10 4.5-10 10c0 46.4 37.6 84 84 84s84-37.6 84-84c0-17.7-14.3-32-32-32z"/>
+        </svg>
+    </div>
+    <div class="scan-text">Verificando Identidad</div>
+    <div class="scan-status" id="scan-status-text">ESCANEO BIOMÉTRICO EN CURSO...</div>
+</div>
 </body>
 </html>
