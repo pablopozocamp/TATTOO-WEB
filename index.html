@@ -1061,7 +1061,7 @@
                 </div>
 
                 <form id="vieraBooking">
-                    <input type="text" placeholder="IDENTITY" required>
+                    <input type="text" id="client-identity" placeholder="IDENTITY" required>
                     <input type="email" placeholder="E-MAIL" required>
                     
                     <select id="project-style-select" required>
@@ -1338,7 +1338,7 @@
             L.marker(coords, { icon: ledIcon }).addTo(map);
         }
 
-        /* ==================== CLIENT DNA CARD PROFESIONAL ==================== */
+        /* ==================== CLIENT DNA CARD PROFESIONAL (VERSIÓN MEJORADA 2026) ==================== */
         let currentBookingData = null;
 
         function generateUniqueCode() {
@@ -1352,83 +1352,118 @@
             canvas.width = 800;
             canvas.height = 520;
 
+            // Fondo base
             ctx.fillStyle = '#050505';
             ctx.fillRect(0, 0, 800, 520);
 
+            // Glow border layer 1 (efecto holográfico)
+            ctx.shadowColor = 'rgba(0, 240, 255, 0.45)';
+            ctx.shadowBlur = 30;
+            ctx.strokeStyle = '#222222';
+            ctx.lineWidth = 24;
+            ctx.strokeRect(15, 15, 770, 490);
+
+            // Border principal premium
+            ctx.shadowBlur = 0;
             const grad = ctx.createLinearGradient(0, 0, 800, 520);
-            grad.addColorStop(0, '#222222');
+            grad.addColorStop(0, '#333333');
             grad.addColorStop(1, '#111111');
             ctx.strokeStyle = grad;
-            ctx.lineWidth = 18;
+            ctx.lineWidth = 13;
             ctx.strokeRect(25, 25, 750, 470);
 
+            // === TEXTOS CON GLOW ===
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#aaaaaa';
             ctx.font = '700 13px Syncopate';
             ctx.fillStyle = '#aaaaaa';
             ctx.textAlign = 'center';
-            ctx.fillText('VIERA TATTOO STUDIO — EST. 2026', 400, 58);
+            ctx.fillText('VIERA TATTOO STUDIO — EST. 2026', 400, 55);
 
-            ctx.font = '700 28px Syncopate';
+            ctx.font = '700 24px Syncopate';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('OFFICIAL CLIENT DNA PROFILE', 400, 95);
+            ctx.fillText('OFFICIAL CLIENT DNA PROFILE', 400, 88);
 
-            ctx.font = '700 42px Space Grotesk';
+            // NOMBRE DEL CLIENTE (GRANDE + GLOW NEÓN)
+            ctx.shadowColor = '#00f0ff';
+            ctx.shadowBlur = 22;
+            ctx.font = '700 36px Space Grotesk';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(data.name, 400, 145);
+
+            // CÓDIGO
+            ctx.shadowBlur = 18;
+            ctx.font = '700 39px Space Grotesk';
             ctx.fillStyle = '#00f0ff';
-            ctx.fillText(data.code, 400, 155);
+            ctx.fillText(data.code, 400, 195);
 
+            ctx.shadowBlur = 0;
+
+            // Línea separadora
             ctx.strokeStyle = '#333333';
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(80, 175);
-            ctx.lineTo(720, 175);
+            ctx.moveTo(72, 220);
+            ctx.lineTo(728, 220);
             ctx.stroke();
 
-            ctx.font = '500 16px Syncopate';
+            // Etiquetas
+            ctx.font = '500 15px Syncopate';
             ctx.fillStyle = '#888888';
             ctx.textAlign = 'left';
-            ctx.fillText('ZONES SELECTED', 80, 225);
-            ctx.fillText('PROJECT STYLE', 80, 280);
-            ctx.fillText('BOOKING DATE', 80, 335);
-            ctx.fillText('ISSUED ON', 80, 390);
+            ctx.fillText('ZONES SELECTED', 80, 255);
+            ctx.fillText('PROJECT STYLE', 80, 305);
+            ctx.fillText('BOOKING DATE', 80, 355);
+            ctx.fillText('ISSUED ON', 80, 405);
 
+            // Valores
             ctx.font = '500 19px Space Grotesk';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(data.zones, 80, 248);
-            ctx.fillText(data.style, 80, 303);
-            ctx.fillText(data.date, 80, 358);
-            ctx.fillText('18 MARCH 2026', 80, 413);
+            ctx.fillText(data.zones, 80, 277);
+            ctx.fillText(data.style, 80, 327);
+            ctx.fillText(data.date, 80, 377);
+            ctx.fillText('18 MARCH 2026', 80, 427);
 
+            // DNA HELIX mejorada (lado derecho)
             ctx.save();
-            ctx.translate(560, 240);
+            ctx.translate(565, 255);
+            ctx.shadowColor = '#00f0ff';
+            ctx.shadowBlur = 14;
             ctx.strokeStyle = '#00f0ff';
-            ctx.lineWidth = 3.5;
-            for (let i = 0; i < 11; i++) {
+            ctx.lineWidth = 4;
+            for (let i = 0; i < 14; i++) {
                 ctx.beginPath();
-                ctx.arc(0, 8 + i * 11, 72 - i * 4.5, Math.PI * 1.05, Math.PI * 1.95);
+                ctx.arc(0, 4 + i * 11.5, 79 - i * 4.8, Math.PI * 1.02, Math.PI * 1.98);
                 ctx.stroke();
             }
             ctx.restore();
 
+            // Sello biométrico premium
             ctx.save();
-            ctx.translate(620, 410);
-            ctx.rotate(-0.12);
-            ctx.font = '700 13px Syncopate';
+            ctx.translate(625, 418);
+            ctx.rotate(-0.09);
+            ctx.shadowColor = '#d4af77';
+            ctx.shadowBlur = 12;
+            ctx.font = '700 15px Syncopate';
             ctx.fillStyle = '#d4af77';
             ctx.textAlign = 'center';
             ctx.fillText('VERIFIED', 0, 0);
-            ctx.font = '400 9px Syncopate';
-            ctx.fillText('BIOMETRIC SEAL', 0, 18);
+            ctx.font = '400 9.5px Syncopate';
+            ctx.fillText('BIOMETRIC SEAL', 0, 23);
             ctx.restore();
 
+            // QR denso
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(680, 380, 68, 68);
-            ctx.fillStyle = '#000';
-            for (let i = 0; i < 6; i++) {
-                for (let j = 0; j < 6; j++) {
-                    if (Math.random() > 0.4) ctx.fillRect(685 + i*10, 385 + j*10, 6, 6);
+            ctx.fillRect(682, 380, 72, 72);
+            ctx.fillStyle = '#000000';
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (Math.random() > 0.32) ctx.fillRect(687 + i*8.2, 385 + j*8.2, 5.8, 5.8);
                 }
             }
 
-            ctx.font = '400 10px Syncopate';
+            // Footer
+            ctx.font = '400 9px Syncopate';
             ctx.fillStyle = '#555555';
             ctx.textAlign = 'center';
             ctx.fillText('CONFIDENTIAL CLIENT RECORD • NOT FOR PUBLIC DISTRIBUTION', 400, 500);
@@ -1579,8 +1614,11 @@
                     return;
                 }
                 
+                const clientName = document.getElementById('client-identity').value.trim().toUpperCase() || 'CLIENTE ANÓNIMO';
+
                 currentBookingData = {
                     code: generateUniqueCode(),
+                    name: clientName,
                     style: styleSelect.value || 'BLACK & GREY REALISM',
                     date: document.getElementById('selected-date-input').value.replace('SELECTED: ', '') || 'OCTOBER 2026',
                     zones: selectedZones.map(z => z.area.replace(/-/g, ' ')).join(' • ') || 'NONE SELECTED'
