@@ -203,6 +203,13 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
             backdrop-filter: blur(5px);
             transition: all 0.4s ease;
+            /* FIX DE SUPERPOSICIÓN: Evita que el fondo transparente atrape clics del calendario */
+            pointer-events: none;
+        }
+
+        /* Reactivamos los clics únicamente en los elementos interactivos del header */
+        .logo, .nav-links-desktop, .nav-controls {
+            pointer-events: auto;
         }
 
         .navbar.scrolled {
@@ -212,6 +219,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             padding: 15px 5%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: none; /* Mantiene la protección tras el scroll */
         }
 
         @media (min-width: 769px) { 
@@ -1067,11 +1075,11 @@
 
     <div id="mobile-nav-overlay">
         <div class="mobile-nav-links">
-            <a href="#top" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">00. HOME</a>
-            <a href="#process" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">01. PROCESS</a>
-            <a href="#aftercare" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">02. AFTERCARE</a>
-            <a href="#location" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">03. LOCATION</a>
-            <a href="#booking" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">04. BOOKING</a>
+            <a href="#top" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">00. HOME</a>
+            <a href="#process" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">01. PROCESS</a>
+            <a href="#aftercare" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">02. AFTERCARE</a>
+            <a href="#location" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">03. LOCATION</a>
+            <a href="#booking" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">04. BOOKING</a>
         </div>
     </div>
 
@@ -1087,14 +1095,14 @@
         </div>
 
         <div class="nav-controls">
-            <div class="agenda-status" id="agenda-bar" onclick="vibe(15)">
+            <div class="agenda-status" id="agenda-bar">
                 <div class="status-header">
                     <div class="status-dot"></div>
                     <span id="agenda-main-text">CLOSED</span>
                 </div>
                 <span class="agenda-detail">NEXT OPENING:<br>OCTOBER 2026<br>WAITLIST ACTIVE</span>
             </div>
-            <div class="mobile-menu-btn" onclick="toggleMobileNav(); vibe(15); playModernClick();">
+            <div class="mobile-menu-btn" onclick="toggleMobileNav(event); vibe(15); playModernClick();">
                 <div class="mobile-menu-line"></div>
                 <div class="mobile-menu-line"></div>
                 <div class="mobile-menu-line"></div>
@@ -1437,8 +1445,9 @@
             osc3.stop(now + 1.0);
         }
 
-        // FUNCIONES DE NAVEGACIÓN MÓVIL
-        function toggleMobileNav() {
+        // FUNCIONES DE NAVEGACIÓN MÓVIL (Con stopPropagation para evitar rebotes)
+        function toggleMobileNav(e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
             const overlay = document.getElementById('mobile-nav-overlay');
             const btn = document.querySelector('.mobile-menu-btn');
             overlay.classList.toggle('open');
@@ -2042,7 +2051,8 @@
                 }
             });
 
-            agendaBar.addEventListener('click', function() { 
+            agendaBar.addEventListener('click', function(e) {
+                if(e) e.stopPropagation();
                 vibe(15); 
                 playWoosh();
                 this.classList.toggle('expanded'); 
