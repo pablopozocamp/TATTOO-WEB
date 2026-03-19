@@ -15,6 +15,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
     <style>
+        html { scroll-behavior: smooth; }
+        
         /* ============================================================
            CONFIGURACIÓN DE VARIABLES DE DISEÑO (SISTEMA DE DISEÑO)
            ============================================================ */
@@ -186,23 +188,77 @@
             z-index: 2;
         }
 
+        /* ============================================================
+           NAVBAR Y MENÚ DE NAVEGACIÓN
+           ============================================================ */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%; position: fixed; width: 100%; z-index: 10000;
-            background: linear-gradient(to bottom, var(--bg), transparent);
+            padding: 20px 5%; position: fixed; top: 0; left: 0; width: 100%; z-index: 100000;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
             backdrop-filter: blur(5px);
+            transition: all 0.4s ease;
         }
 
-        @media (min-width: 769px) { .navbar { padding: 35px 8%; } }
+        .navbar.scrolled {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 5%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        @media (min-width: 769px) { 
+            .navbar { padding: 35px 8%; } 
+            .navbar.scrolled { padding: 20px 8%; }
+        }
 
         .logo { 
             font-family: 'Syncopate'; 
             letter-spacing: 4px; 
             font-size: 0.7rem; 
             font-weight: 700; 
+            z-index: 10001;
         }
 
-        .nav-controls { display: flex; align-items: center; gap: 10px; }
+        .nav-controls { display: flex; align-items: center; gap: 15px; z-index: 10001; }
+
+        .nav-links-desktop { display: none; align-items: center; gap: 35px; }
+        @media (min-width: 1024px) { .nav-links-desktop { display: flex; } }
+        
+        .nav-item {
+            font-family: 'Syncopate'; font-size: 0.45rem; letter-spacing: 3px;
+            color: var(--text-muted); text-decoration: none; text-transform: uppercase;
+            transition: color 0.3s ease, text-shadow 0.3s ease; position: relative;
+            pointer-events: auto !important;
+        }
+        .nav-item:hover { color: var(--primary); text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+        .nav-item::before { content: '['; position: absolute; left: -15px; opacity: 0; color: var(--xray-blue); transition: 0.3s ease; }
+        .nav-item::after { content: ']'; position: absolute; right: -15px; opacity: 0; color: var(--xray-blue); transition: 0.3s ease; }
+        .nav-item:hover::before { left: -10px; opacity: 1; }
+        .nav-item:hover::after { right: -10px; opacity: 1; }
+
+        .mobile-menu-btn { display: flex; flex-direction: column; gap: 6px; z-index: 10001; pointer-events: auto !important; padding: 10px; }
+        @media (min-width: 1024px) { .mobile-menu-btn { display: none; } }
+        .mobile-menu-line { width: 25px; height: 1px; background: var(--primary); transition: 0.4s; }
+        .mobile-menu-btn.active .mobile-menu-line:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--xray-blue); box-shadow: 0 0 10px var(--xray-blue); }
+        .mobile-menu-btn.active .mobile-menu-line:nth-child(2) { opacity: 0; }
+        .mobile-menu-btn.active .mobile-menu-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--xray-blue); box-shadow: 0 0 10px var(--xray-blue); }
+
+        #mobile-nav-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px);
+            z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        #mobile-nav-overlay.open { opacity: 1; pointer-events: auto !important; }
+        .mobile-nav-links { display: flex; flex-direction: column; gap: 40px; text-align: center; }
+        .mobile-nav-item {
+            font-family: 'Syncopate'; font-size: 0.8rem; letter-spacing: 5px;
+            color: var(--text-muted); text-decoration: none; transition: 0.3s;
+            pointer-events: auto !important;
+        }
+        .mobile-nav-item:hover, .mobile-nav-item:active { color: var(--primary); text-shadow: 0 0 15px var(--xray-blue); }
 
         .agenda-status {
             font-size: 0.45rem; letter-spacing: 2px;
@@ -787,7 +843,7 @@
         .leaflet-control-attribution, .leaflet-control-zoom { display: none !important; }
 
         .location-info { margin-top: 30px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 769px) { .location-info { grid-template-columns: 1fr 1fr; gap: 40px; } }
+        @media (min-width: 769px) { .location-info { grid-template-columns: 1fr 1fr 1fr; gap: 40px; } }
 
         .info-box {
             padding: 30px; border: 1px solid var(--border); background: var(--glass);
@@ -810,128 +866,146 @@
         }
 
         /* --- BIOMETRIC SCANNER STYLE --- */
-#biometric-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    z-index: 10000;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    font-family: 'Syncopate', sans-serif;
-    overflow: hidden;
-}
+        #biometric-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-family: 'Syncopate', sans-serif;
+            overflow: hidden;
+        }
 
-.scanner-box {
-    position: relative;
-    width: 280px;
-    height: 380px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.02);
-}
+        .scanner-box {
+            position: relative;
+            width: 280px;
+            height: 380px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+        }
 
-.scanner-laser {
-    position: absolute;
-    width: 100%;
-    height: 4px;
-    background: #00f2ff;
-    box-shadow: 0 0 15px #00f2ff, 0 0 30px #00f2ff;
-    top: 0;
-    z-index: 2;
-    animation: scanning 2.5s ease-in-out infinite;
-}
+        .scanner-laser {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: #00f2ff;
+            box-shadow: 0 0 15px #00f2ff, 0 0 30px #00f2ff;
+            top: 0;
+            z-index: 2;
+            animation: scanning 2.5s ease-in-out infinite;
+        }
 
-@keyframes scanning {
-    0% { top: 0%; }
-    50% { top: 100%; }
-    100% { top: 0%; }
-}
+        @keyframes scanning {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
 
-.fingerprint-svg {
-    width: 150px;
-    opacity: 0.5;
-    fill: var(--primary);
-}
+        .fingerprint-svg {
+            width: 150px;
+            opacity: 0.5;
+            fill: var(--primary);
+        }
 
-.scan-text {
-    margin-top: 30px;
-    letter-spacing: 5px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    animation: pulseText 1.5s infinite;
-}
+        .scan-text {
+            margin-top: 30px;
+            letter-spacing: 5px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            animation: pulseText 1.5s infinite;
+        }
 
-@keyframes pulseText {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
+        @keyframes pulseText {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
 
-.scan-status {
-    margin-top: 10px;
-    font-family: 'Space Grotesk', sans-serif;
-    color: #00f2ff;
-    font-size: 0.9rem;
-}
+        .scan-status {
+            margin-top: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            color: #00f2ff;
+            font-size: 0.9rem;
+        }
 
-/* =============================================
-   DNA CARD – TARJETA DE CRÉDITO NEGRA LUXURY + 3D MEJORADO
-   ============================================= */
-#dna-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.97); z-index: 3200000;
-    display: none; align-items: center; justify-content: center;
-    transition: opacity 0.8s cubic-bezier(0.19,1,0.22,1);
-    backdrop-filter: blur(20px);
-}
-#dna-overlay.open { display: flex; opacity: 1; }
+        /* =============================================
+           DNA CARD – TARJETA DE CRÉDITO NEGRA LUXURY + 3D MEJORADO
+           ============================================= */
+        #dna-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.97); z-index: 3200000;
+            display: none; align-items: center; justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.19,1,0.22,1);
+            backdrop-filter: blur(20px);
+        }
+        #dna-overlay.open { display: flex; opacity: 1; }
 
-.dna-card-container {
-    perspective: 2200px;
-    width: 880px;
-    max-width: 94%;
-    margin: 0 auto;
-    position: relative;
-}
-#dna-card {
-    width: 100%;
-    transform-style: preserve-3d;
-    transition: transform 0.06s linear;
-    box-shadow: 
-        0 90px 220px rgba(0, 0, 0, 0.85),
-        0 0 180px rgba(212, 175, 119, 0.25),
-        inset 0 0 140px rgba(255,255,255,0.08),
-        inset 0 -40px 80px rgba(0,0,0,0.6);
-    border-radius: 22px;
-    overflow: hidden;
-    cursor: grab;
-    background: #0a0a0a;
-}
-#dna-card:active { cursor: grabbing; }
+        .dna-card-container {
+            perspective: 2200px;
+            width: 880px;
+            max-width: 94%;
+            margin: 0 auto;
+            position: relative;
+        }
+        #dna-card {
+            width: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.06s linear;
+            box-shadow: 
+                0 90px 220px rgba(0, 0, 0, 0.85),
+                0 0 180px rgba(212, 175, 119, 0.25),
+                inset 0 0 140px rgba(255,255,255,0.08),
+                inset 0 -40px 80px rgba(0,0,0,0.6);
+            border-radius: 22px;
+            overflow: hidden;
+            cursor: grab;
+            background: #0a0a0a;
+        }
+        #dna-card:active { cursor: grabbing; }
 
-#dna-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 14px solid transparent;
-    background: linear-gradient(#d4af77, #d4af77) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    pointer-events: none;
-    z-index: 3;
-    opacity: 0.85;
-}
+        #dna-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 14px solid transparent;
+            background: linear-gradient(#d4af77, #d4af77) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0.85;
+        }
+
+        /* =============================================
+           CLIMA REAL - ESTILOS DEL CANVAS SUPERPUESTO
+           ============================================= */
+        #weather-overlay {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            z-index: 5; /* Por debajo de modales pero encima de fondos */
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2.5s ease;
+            mix-blend-mode: screen; /* Efecto de luz cibernética */
+        }
     </style>
 </head>
-<body>
+<body id="top">
+    
+    <canvas id="weather-overlay"></canvas>
 
     <div id="viera-alert-popup">
         <div class="alert-inner">
@@ -965,7 +1039,6 @@
         </div>
     </div>
 
-    <!-- ==================== DNA CARD – TARJETA DE CRÉDITO NEGRA LUXURY + 3D MEJORADO ==================== -->
     <div id="dna-overlay">
         <div class="dna-card-container">
             <div id="dna-card">
@@ -986,26 +1059,51 @@
         </div>
     </div>
 
-    <div id="content-wrapper">
-        <nav class="navbar">
-            <div class="logo">VIERA.STUDIO</div>
-            <div class="nav-controls">
-                <div class="agenda-status" id="agenda-bar" onclick="vibe(15)">
-                    <div class="status-header">
-                        <div class="status-dot"></div>
-                        <span id="agenda-main-text">CLOSED</span>
-                    </div>
-                    <span class="agenda-detail">NEXT OPENING:<br>OCTOBER 2026<br>WAITLIST ACTIVE</span>
+    <div id="mobile-nav-overlay">
+        <div class="mobile-nav-links">
+            <a href="#top" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">00. HOME</a>
+            <a href="#process" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">01. PROCESS</a>
+            <a href="#aftercare" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">02. AFTERCARE</a>
+            <a href="#location" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">03. LOCATION</a>
+            <a href="#booking" class="mobile-nav-item" onclick="toggleMobileNav(); playModernClick(); vibe(10)">04. BOOKING</a>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">VIERA.STUDIO</div>
+        
+        <div class="nav-links-desktop">
+            <a href="#top" class="nav-item" onclick="playModernClick(); vibe(10)">HOME</a>
+            <a href="#process" class="nav-item" onclick="playModernClick(); vibe(10)">PROCESS</a>
+            <a href="#aftercare" class="nav-item" onclick="playModernClick(); vibe(10)">AFTERCARE</a>
+            <a href="#location" class="nav-item" onclick="playModernClick(); vibe(10)">LOCATION</a>
+            <a href="#booking" class="nav-item" onclick="playModernClick(); vibe(10)">BOOKING</a>
+        </div>
+
+        <div class="nav-controls">
+            <div class="agenda-status" id="agenda-bar" onclick="vibe(15)">
+                <div class="status-header">
+                    <div class="status-dot"></div>
+                    <span id="agenda-main-text">CLOSED</span>
                 </div>
+                <span class="agenda-detail">NEXT OPENING:<br>OCTOBER 2026<br>WAITLIST ACTIVE</span>
             </div>
-        </nav>
+            <div class="mobile-menu-btn" onclick="toggleMobileNav(); vibe(15); playModernClick();">
+                <div class="mobile-menu-line"></div>
+                <div class="mobile-menu-line"></div>
+                <div class="mobile-menu-line"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="content-wrapper">
 
         <header class="hero">
             <div id="hero-particles"></div>
             <div id="parallax-text"><h1 class="liquid-text" id="main-title">VIERA</h1></div>
         </header>
 
-        <section class="section">
+        <section id="process" class="section">
             <h2 class="section-title">// THE PROCESS</h2>
             <div class="process-grid">
                 <div class="process-card surface-container" onclick="vibe(10);openPopup(1)">
@@ -1026,7 +1124,7 @@
             </div>
         </section>
 
-        <section class="section">
+        <section id="aftercare" class="section">
             <h2 class="section-title">// AFTERCARE GUIDE</h2>
             <div class="aftercare-container">
                 <div class="acc-item" onclick="vibe(5);toggleAcc(this)">
@@ -1044,7 +1142,7 @@
             </div>
         </section>
 
-        <section class="section map-section">
+        <section id="location" class="section map-section">
             <h2 class="section-title">// STUDIO LOCATION</h2>
             <div class="map-wrapper surface-container">
                 <div id="map"></div>
@@ -1059,6 +1157,10 @@
                 <div class="info-box">
                     <span class="info-label">ACCESS PROTOCOL</span>
                     <div class="info-value">ESTUDIO PRIVADO // SOLO CITA PREVIA<br>CONTACTO: @uvetattooer</div>
+                </div>
+                <div class="info-box" id="weather-info-box">
+                    <span class="info-label">LIVE ENVIRONMENT</span>
+                    <div class="info-value" id="studio-weather-status" style="font-size: 0.85rem; color: var(--xray-blue);">CONNECTING TO METEO SATELLITE...</div>
                 </div>
             </div>
         </section>
@@ -1327,6 +1429,20 @@
             osc1.stop(now + 1.3);
             osc2.stop(now + 1.2);
             osc3.stop(now + 1.0);
+        }
+
+        // FUNCIONES DE NAVEGACIÓN MÓVIL
+        function toggleMobileNav() {
+            const overlay = document.getElementById('mobile-nav-overlay');
+            const btn = document.querySelector('.mobile-menu-btn');
+            overlay.classList.toggle('open');
+            btn.classList.toggle('active');
+            if(overlay.classList.contains('open')) {
+                document.body.style.overflow = 'hidden';
+                playWoosh();
+            } else {
+                document.body.style.overflow = '';
+            }
         }
 
         function setView(type) {
@@ -1718,11 +1834,106 @@
             playSuccess();
         }
 
+        /* =============================================
+           SISTEMA METEOROLÓGICO SATELITAL (OPEN-METEO)
+           ============================================= */
+        async function fetchRealWeather() {
+            try {
+                // Coordenadas de Hinojos (37.2925, -6.3780)
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.2925&longitude=-6.3780&current_weather=true');
+                const data = await res.json();
+                const code = data.current_weather.weathercode;
+                const temp = data.current_weather.temperature;
+                
+                // WMO Códigos de Lluvia/Tormenta
+                const rainCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99];
+                let isRaining = rainCodes.includes(code);
+                
+                const weatherText = document.getElementById('studio-weather-status');
+                if (weatherText) {
+                    let weatherDesc = isRaining ? "PRECIPITATION DETECTED" : "CLEAR CONDITIONS";
+                    weatherText.innerHTML = `TEMP: ${temp}°C<br>STATUS: ${weatherDesc}`;
+                }
+
+                // Descomenta la siguiente línea para forzar la lluvia y probar el efecto visual
+                // isRaining = true; 
+
+                if (isRaining) {
+                    startCyberRain();
+                }
+            } catch (e) {
+                console.error("Meteo Satellite Error:", e);
+                const weatherText = document.getElementById('studio-weather-status');
+                if (weatherText) weatherText.innerText = "SATELLITE OFFLINE";
+            }
+        }
+
+        function startCyberRain() {
+            const canvas = document.getElementById('weather-overlay');
+            canvas.style.opacity = '0.5'; 
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const drops = [];
+            // Crear 150 trazos de agua cibernética
+            for (let i = 0; i < 150; i++) {
+                drops.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    speed: 15 + Math.random() * 25, // Velocidad de caída
+                    length: 15 + Math.random() * 40, // Longitud del trazo
+                    opacity: 0.1 + Math.random() * 0.6
+                });
+            }
+
+            function drawRain() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.lineCap = 'round';
+                
+                ctx.beginPath();
+                for (let i = 0; i < drops.length; i++) {
+                    const p = drops[i];
+                    ctx.strokeStyle = `rgba(0, 240, 255, ${p.opacity})`; // Color cian de la web
+                    ctx.lineWidth = 1 + Math.random(); // Grosor variable sutil
+                    
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x, p.y + p.length);
+                    ctx.stroke();
+                    
+                    p.y += p.speed;
+                    // Resetear la gota arriba si cae fuera de la pantalla
+                    if (p.y > canvas.height) {
+                        p.y = -p.length;
+                        p.x = Math.random() * canvas.width;
+                    }
+                }
+                requestAnimationFrame(drawRain);
+            }
+            drawRain();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const body = document.body; 
             const arrow = document.getElementById('custom-arrow'); 
             const bookingForm = document.getElementById('vieraBooking');
             const agendaBar = document.getElementById('agenda-bar');
+
+            // EFECTO SCROLL NAVBAR
+            const navbar = document.querySelector('.navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
 
             let selectedZones = []; 
             const styleSelect = document.getElementById('project-style-select');
@@ -1948,13 +2159,15 @@
                     setTimeout(() => { 
                         document.getElementById('loader').style.display = 'none'; 
                         initVieraMap();
+                        fetchRealWeather(); // INICIAMOS EL SISTEMA DE CLIMA AL CARGAR
                     }, 1000); 
                 } 
                 document.getElementById('loader-perc').innerText = loadPerc + '%'; 
                 document.getElementById('loader-text-fill').style.width = loadPerc + '%'; 
             }, 25);
 
-            const uiElements = 'button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .process-card, .overlay-close, .agenda-status, .body-part, .xray-btn, .info-box';
+            // AÑADIDOS a, .nav-item y .mobile-menu-btn para que el cursor interactúe con el nuevo menú
+            const uiElements = 'a, .nav-item, .mobile-menu-btn, button, input, select, textarea, .acc-item, .fc-button, .fc-daygrid-day, label, .process-card, .overlay-close, .agenda-status, .body-part, .xray-btn, .info-box';
             document.querySelectorAll(uiElements).forEach(el => { 
                 el.addEventListener('mouseenter', () => body.classList.add('arrow-active')); 
                 el.addEventListener('mouseleave', () => body.classList.remove('arrow-active')); 
