@@ -63,7 +63,6 @@
             width: 22px; height: 22px;
             z-index: 9999999; 
             pointer-events: none;
-            /* FIX DE HITBOX: Alinea la punta superior izquierda del SVG con el píxel exacto del ratón */
             margin-left: -6px;
             margin-top: -2px;
             will-change: transform, margin, width, height;
@@ -88,13 +87,11 @@
             background: var(--glass); 
             border: 1px solid var(--primary);
             border-radius: 50%;
-            /* Centra el círculo de 50px exactamente sobre el píxel de clic */
             margin-left: -25px;
             margin-top: -25px;
         }
 
         .arrow-active .arrow-svg { transform: scale(0.5); }
-        /* Aplica la animación de clic al SVG para no sobrescribir el transform de JS */
         .arrow-click .arrow-svg { transform: scale(0.4); opacity: 0.7; }
 
         body {
@@ -195,7 +192,7 @@
         }
 
         /* ============================================================
-           NAVBAR Y MENÚ DE NAVEGACIÓN
+           NAVBAR Y MENÚ DE NAVEGACIÓN (OPTIMIZADO MÓVIL)
            ============================================================ */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
@@ -203,13 +200,7 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
             backdrop-filter: blur(5px);
             transition: all 0.4s ease;
-            /* FIX DE SUPERPOSICIÓN: Evita que el fondo transparente atrape clics del calendario */
-            pointer-events: none;
-        }
-
-        /* Reactivamos los clics únicamente en los elementos interactivos del header */
-        .logo, .nav-links-desktop, .nav-controls {
-            pointer-events: auto;
+            pointer-events: none; /* Crucial para evitar hitbox superpuesto */
         }
 
         .navbar.scrolled {
@@ -218,8 +209,6 @@
             -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             padding: 15px 5%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            pointer-events: none; /* Mantiene la protección tras el scroll */
         }
 
         @media (min-width: 769px) { 
@@ -233,11 +222,19 @@
             font-size: 0.7rem; 
             font-weight: 700; 
             z-index: 10001;
+            pointer-events: auto !important;
         }
 
-        .nav-controls { display: flex; align-items: center; gap: 15px; z-index: 10001; }
+        /* Los contenedores invisibles no interceptarán clics */
+        .nav-controls { 
+            display: flex; align-items: center; gap: 15px; z-index: 10001; 
+            pointer-events: none; 
+        }
 
-        .nav-links-desktop { display: none; align-items: center; gap: 35px; }
+        .nav-links-desktop { 
+            display: none; align-items: center; gap: 35px; 
+            pointer-events: none; 
+        }
         @media (min-width: 1024px) { .nav-links-desktop { display: flex; } }
         
         .nav-item {
@@ -252,15 +249,21 @@
         .nav-item:hover::before { left: -10px; opacity: 1; }
         .nav-item:hover::after { right: -10px; opacity: 1; }
 
-        .mobile-menu-btn { display: flex; flex-direction: column; gap: 6px; z-index: 10001; pointer-events: auto !important; padding: 10px; }
+        .mobile-menu-btn { 
+            display: flex; flex-direction: column; justify-content: center; gap: 6px; 
+            z-index: 10001; pointer-events: auto !important; 
+            padding: 15px; margin: -15px; /* Aumenta zona táctil sin romper diseño */
+            cursor: pointer;
+        }
         @media (min-width: 1024px) { .mobile-menu-btn { display: none; } }
+        
         .mobile-menu-line { width: 25px; height: 1px; background: var(--primary); transition: 0.4s; }
         .mobile-menu-btn.active .mobile-menu-line:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--xray-blue); box-shadow: 0 0 10px var(--xray-blue); }
         .mobile-menu-btn.active .mobile-menu-line:nth-child(2) { opacity: 0; }
         .mobile-menu-btn.active .mobile-menu-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--xray-blue); box-shadow: 0 0 10px var(--xray-blue); }
 
         #mobile-nav-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px);
             z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center;
             opacity: 0; pointer-events: none; transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
@@ -271,6 +274,7 @@
             font-family: 'Syncopate'; font-size: 0.8rem; letter-spacing: 5px;
             color: var(--text-muted); text-decoration: none; transition: 0.3s;
             pointer-events: auto !important;
+            padding: 10px; /* Mejor hitbox en móvil */
         }
         .mobile-nav-item:hover, .mobile-nav-item:active { color: var(--primary); text-shadow: 0 0 15px var(--xray-blue); }
 
@@ -763,7 +767,6 @@
             pointer-events: auto !important; width: 100%; 
         }
 
-        /* ====================== FIX CALENDARIO (MARCO Y NÚMEROS VISIBLES DESDE EL INICIO) ====================== */
         .fc-theme-standard td, .fc-theme-standard th { 
             border: 1px solid rgba(255,255,255,0.08) !important; 
         }
@@ -840,7 +843,7 @@
         footer { padding: 60px 0; text-align: center; opacity: 0.2; font-size: 0.45rem; letter-spacing: 8px; font-family: 'Syncopate'; }
         .spacer-v { height: 40px; width: 100%; }
 
-        /* --- ESTILOS DEL MAPA (NUEVO) --- */
+        /* --- ESTILOS DEL MAPA --- */
         .map-section { padding: 80px 5%; }
         @media (min-width: 769px) { .map-section { padding: 120px 10%; } }
 
@@ -857,7 +860,7 @@
         .leaflet-control-attribution, .leaflet-control-zoom { display: none !important; }
 
         .location-info { margin-top: 30px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 769px) { .location-info { grid-template-columns: 1fr 1fr 1fr; gap: 40px; } }
+        @media (min-width: 769px) { .location-info { grid-template-columns: 1fr 1fr; gap: 40px; } }
 
         .info-box {
             padding: 30px; border: 1px solid var(--border); background: var(--glass);
@@ -1000,26 +1003,9 @@
             opacity: 0.85;
         }
 
-        /* =============================================
-           CLIMA REAL - ESTILOS DEL CANVAS SUPERPUESTO
-           ============================================= */
-        #weather-overlay {
-            position: fixed;
-            top: 0; 
-            left: 0;
-            width: 100%; 
-            height: 100%;
-            z-index: 5; /* Por debajo de modales pero encima de fondos */
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 2.5s ease;
-            mix-blend-mode: screen; /* Efecto de luz cibernética */
-        }
     </style>
 </head>
 <body id="top">
-    
-    <canvas id="weather-overlay"></canvas>
 
     <div id="viera-alert-popup">
         <div class="alert-inner">
@@ -1075,11 +1061,11 @@
 
     <div id="mobile-nav-overlay">
         <div class="mobile-nav-links">
-            <a href="#top" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">00. HOME</a>
-            <a href="#process" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">01. PROCESS</a>
-            <a href="#aftercare" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">02. AFTERCARE</a>
-            <a href="#location" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">03. LOCATION</a>
-            <a href="#booking" class="mobile-nav-item" onclick="toggleMobileNav(event); playModernClick(); vibe(10)">04. BOOKING</a>
+            <a href="#top" class="mobile-nav-item">00. HOME</a>
+            <a href="#process" class="mobile-nav-item">01. PROCESS</a>
+            <a href="#aftercare" class="mobile-nav-item">02. AFTERCARE</a>
+            <a href="#location" class="mobile-nav-item">03. LOCATION</a>
+            <a href="#booking" class="mobile-nav-item">04. BOOKING</a>
         </div>
     </div>
 
@@ -1087,11 +1073,11 @@
         <div class="logo">VIERA.STUDIO</div>
         
         <div class="nav-links-desktop">
-            <a href="#top" class="nav-item" onclick="playModernClick(); vibe(10)">HOME</a>
-            <a href="#process" class="nav-item" onclick="playModernClick(); vibe(10)">PROCESS</a>
-            <a href="#aftercare" class="nav-item" onclick="playModernClick(); vibe(10)">AFTERCARE</a>
-            <a href="#location" class="nav-item" onclick="playModernClick(); vibe(10)">LOCATION</a>
-            <a href="#booking" class="nav-item" onclick="playModernClick(); vibe(10)">BOOKING</a>
+            <a href="#top" class="nav-item">HOME</a>
+            <a href="#process" class="nav-item">PROCESS</a>
+            <a href="#aftercare" class="nav-item">AFTERCARE</a>
+            <a href="#location" class="nav-item">LOCATION</a>
+            <a href="#booking" class="nav-item">BOOKING</a>
         </div>
 
         <div class="nav-controls">
@@ -1102,7 +1088,7 @@
                 </div>
                 <span class="agenda-detail">NEXT OPENING:<br>OCTOBER 2026<br>WAITLIST ACTIVE</span>
             </div>
-            <div class="mobile-menu-btn" onclick="toggleMobileNav(event); vibe(15); playModernClick();">
+            <div class="mobile-menu-btn">
                 <div class="mobile-menu-line"></div>
                 <div class="mobile-menu-line"></div>
                 <div class="mobile-menu-line"></div>
@@ -1171,10 +1157,6 @@
                 <div class="info-box">
                     <span class="info-label">ACCESS PROTOCOL</span>
                     <div class="info-value">ESTUDIO PRIVADO // SOLO CITA PREVIA<br>CONTACTO: @uvetattooer</div>
-                </div>
-                <div class="info-box" id="weather-info-box">
-                    <span class="info-label">LIVE ENVIRONMENT</span>
-                    <div class="info-value" id="studio-weather-status" style="font-size: 0.85rem; color: var(--xray-blue);">CONNECTING TO METEO SATELLITE...</div>
                 </div>
             </div>
         </section>
@@ -1443,21 +1425,6 @@
             osc1.stop(now + 1.3);
             osc2.stop(now + 1.2);
             osc3.stop(now + 1.0);
-        }
-
-        // FUNCIONES DE NAVEGACIÓN MÓVIL (Con stopPropagation para evitar rebotes)
-        function toggleMobileNav(e) {
-            if (e) { e.preventDefault(); e.stopPropagation(); }
-            const overlay = document.getElementById('mobile-nav-overlay');
-            const btn = document.querySelector('.mobile-menu-btn');
-            overlay.classList.toggle('open');
-            btn.classList.toggle('active');
-            if(overlay.classList.contains('open')) {
-                document.body.style.overflow = 'hidden';
-                playWoosh();
-            } else {
-                document.body.style.overflow = '';
-            }
         }
 
         function setView(type) {
@@ -1849,96 +1816,57 @@
             playSuccess();
         }
 
-        /* =============================================
-           SISTEMA METEOROLÓGICO SATELITAL (OPEN-METEO)
-           ============================================= */
-        async function fetchRealWeather() {
-            try {
-                // Coordenadas de Hinojos (37.2925, -6.3780)
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.2925&longitude=-6.3780&current_weather=true');
-                const data = await res.json();
-                const code = data.current_weather.weathercode;
-                const temp = data.current_weather.temperature;
-                
-                // WMO Códigos de Lluvia/Tormenta
-                const rainCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99];
-                let isRaining = rainCodes.includes(code);
-                
-                const weatherText = document.getElementById('studio-weather-status');
-                if (weatherText) {
-                    let weatherDesc = isRaining ? "PRECIPITATION DETECTED" : "CLEAR CONDITIONS";
-                    weatherText.innerHTML = `TEMP: ${temp}°C<br>STATUS: ${weatherDesc}`;
-                }
-
-                // Descomenta la siguiente línea para forzar la lluvia y probar el efecto visual
-                // isRaining = true; 
-
-                if (isRaining) {
-                    startCyberRain();
-                }
-            } catch (e) {
-                console.error("Meteo Satellite Error:", e);
-                const weatherText = document.getElementById('studio-weather-status');
-                if (weatherText) weatherText.innerText = "SATELLITE OFFLINE";
-            }
-        }
-
-        function startCyberRain() {
-            const canvas = document.getElementById('weather-overlay');
-            canvas.style.opacity = '0.5'; 
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            const drops = [];
-            // Crear 150 trazos de agua cibernética
-            for (let i = 0; i < 150; i++) {
-                drops.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    speed: 15 + Math.random() * 25, // Velocidad de caída
-                    length: 15 + Math.random() * 40, // Longitud del trazo
-                    opacity: 0.1 + Math.random() * 0.6
-                });
-            }
-
-            function drawRain() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.lineCap = 'round';
-                
-                ctx.beginPath();
-                for (let i = 0; i < drops.length; i++) {
-                    const p = drops[i];
-                    ctx.strokeStyle = `rgba(0, 240, 255, ${p.opacity})`; // Color cian de la web
-                    ctx.lineWidth = 1 + Math.random(); // Grosor variable sutil
-                    
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x, p.y + p.length);
-                    ctx.stroke();
-                    
-                    p.y += p.speed;
-                    // Resetear la gota arriba si cae fuera de la pantalla
-                    if (p.y > canvas.height) {
-                        p.y = -p.length;
-                        p.x = Math.random() * canvas.width;
-                    }
-                }
-                requestAnimationFrame(drawRain);
-            }
-            drawRain();
-
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             const body = document.body; 
             const arrow = document.getElementById('custom-arrow'); 
             const bookingForm = document.getElementById('vieraBooking');
             const agendaBar = document.getElementById('agenda-bar');
+
+            /* =========================================================
+               NUEVO CONTROL DEL MENÚ MÓVIL AISLADO
+               ========================================================= */
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+            const mobileOverlay = document.getElementById('mobile-nav-overlay');
+
+            if (mobileBtn && mobileOverlay) {
+                mobileBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    this.classList.toggle('active');
+                    mobileOverlay.classList.toggle('open');
+                    
+                    if(mobileOverlay.classList.contains('open')) {
+                        document.body.style.overflow = 'hidden';
+                        playWoosh();
+                    } else {
+                        document.body.style.overflow = '';
+                        playModernClick();
+                    }
+                    vibe(15);
+                });
+            }
+
+            document.querySelectorAll('.mobile-nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Evitamos que afecte a otros contenedores
+                    
+                    if(mobileBtn) mobileBtn.classList.remove('active');
+                    if(mobileOverlay) mobileOverlay.classList.remove('open');
+                    
+                    document.body.style.overflow = '';
+                    playModernClick();
+                    vibe(10);
+                });
+            });
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    playModernClick();
+                    vibe(10);
+                });
+            });
+
 
             // EFECTO SCROLL NAVBAR
             const navbar = document.querySelector('.navbar');
@@ -2103,7 +2031,6 @@
             loadVieraParticles("#ffffff");
 
             document.addEventListener('mousemove', (e) => {
-                // FIX DE HITBOX: Se quitó el translate(-50%, -50%) ya que ahora los márgenes lo calibran milimétricamente
                 if(window.innerWidth > 768) arrow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
                 const parallax = document.getElementById('parallax-text'); 
                 if(parallax) {
@@ -2180,7 +2107,6 @@
                     setTimeout(() => { 
                         document.getElementById('loader').style.display = 'none'; 
                         initVieraMap();
-                        fetchRealWeather(); // INICIAMOS EL SISTEMA DE CLIMA AL CARGAR
                     }, 1000); 
                 } 
                 document.getElementById('loader-perc').innerText = loadPerc + '%'; 
